@@ -1,0 +1,29 @@
+.verify-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+  background: linear-gradient(to bottom right, #e6f2ff, #ffffff);
+  font-family: 'Segoe UI', sans-serif;
+  padding: 20px;
+}
+
+.verify-box {
+  background: #ffffff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 51, 102, 0.1);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.verify-box h2 {
+  color: #003366;
+  margin-bottom: 15px;
+}
+
+.verify-box p {
+  color: #333;
+  font-size: 16px;
+}

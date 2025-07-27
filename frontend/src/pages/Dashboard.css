@@ -1,0 +1,126 @@
+/* Container Layout */
+.admin-panel-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Sidebar Styling */
+.admin-sidebar {
+  width: 250px;
+  background-color: #003366;
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-sidebar h2 {
+  font-size: 20px;
+  margin-bottom: 30px;
+  color: #f1f1f1;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
+.admin-btn {
+  background-color: transparent;
+  border: none;
+  padding: 12px 0;
+  text-align: left;
+  font-size: 16px;
+  color: #fff;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.admin-btn:hover {
+  background-color: #005599;
+  cursor: pointer;
+}
+
+.admin-link {
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  padding-left: 10px;
+}
+
+/* Main Content Styling */
+.admin-content {
+  flex-grow: 1;
+  padding: 40px 30px;
+  background-color: #fff;
+}
+
+.admin-welcome h3 {
+  color: #003366;
+  margin-bottom: 10px;
+}
+
+.admin-welcome p {
+  font-size: 16px;
+  color: #444;
+}
+
+.admin-settings h4,
+.chart-container h4 {
+  margin-top: 30px;
+  margin-bottom: 20px;
+  color: #003366;
+}
+
+/* Form & Button Styling */
+.form-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.form-control {
+  max-width: 300px;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border: none;
+  padding: 8px 18px;
+  font-weight: 600;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+/* Chart Styling */
+.chart-container {
+  max-width: 500px;
+  margin: 0 auto 40px;
+}
+
+/* Responsive for Smaller Screens */
+@media (max-width: 768px) {
+  .admin-panel-container {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .admin-btn {
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .admin-content {
+    padding: 20px;
+  }
+
+  .chart-container {
+    width: 100%;
+  }
+}

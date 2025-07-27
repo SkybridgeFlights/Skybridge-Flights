@@ -1,0 +1,51 @@
+/* frontend/src/pages/PaymentPage.css */
+.payment-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  background-color: #f2f4f8;
+  padding: 20px;
+}
+
+.payment-box {
+  background-color: white;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.payment-box h2 {
+  margin-bottom: 20px;
+  color: #1a3c8b;
+}
+
+.payment-box p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.pay-btn {
+  margin-top: 25px;
+  background-color: #1a3c8b;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pay-btn:hover {
+  background-color: #0f2c6c;
+}
+
+.processing {
+  color: #1a3c8b;
+}

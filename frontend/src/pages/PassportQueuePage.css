@@ -1,0 +1,89 @@
+.passport-queue-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 20px;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.passport-queue-card {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #004aad;
+  text-align: center;
+}
+
+.page-description {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.passport-form .form-group {
+  margin-bottom: 15px;
+}
+
+.passport-form label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.passport-form label span {
+  color: red;
+}
+
+.passport-form input,
+.passport-form select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.passport-form input:focus,
+.passport-form select:focus {
+  border-color: #004aad;
+  outline: none;
+}
+
+.passport-form .error {
+  border-color: red;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #004aad;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #00337a;
+}
+
+.success-message {
+  margin-top: 10px;
+  color: green;
+  font-weight: 500;
+  text-align: center;
+}

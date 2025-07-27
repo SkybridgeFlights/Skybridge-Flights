@@ -1,0 +1,128 @@
+.refund-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #333;
+}
+
+.refund-container h2 {
+  text-align: center;
+  color: #003366;
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.refund-card {
+  background: #f9f9f9;
+  border-radius: 6px;
+  padding: 20px;
+  border: 1px solid #e6e6e6;
+}
+
+.refund-card p {
+  margin: 8px 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.refund-card strong {
+  color: #003366;
+}
+
+.reason-section {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.reason-section label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #003366;
+}
+
+.reason-section select,
+.reason-section textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.reason-section select:focus,
+.reason-section textarea:focus {
+  border-color: #003366;
+  box-shadow: 0 0 4px rgba(0, 51, 102, 0.3);
+  outline: none;
+}
+
+.reason-section textarea {
+  margin-top: 10px;
+  min-height: 80px;
+  resize: vertical;
+}
+
+.refund-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.btn-back,
+.btn-refund {
+  flex: 1;
+  padding: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-back {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.btn-back:hover {
+  background-color: #5a6268;
+}
+
+.btn-refund {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.btn-refund:hover {
+  background-color: #b02a37;
+}
+
+.loading-text {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .refund-container {
+    padding: 15px;
+  }
+
+  .refund-actions {
+    flex-direction: column;
+  }
+
+  .btn-back,
+  .btn-refund {
+    width: 100%;
+  }
+}

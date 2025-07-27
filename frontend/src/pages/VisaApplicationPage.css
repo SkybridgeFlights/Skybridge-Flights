@@ -1,0 +1,59 @@
+/* frontend/src/pages/VisaApplicationPage.css */
+.visa-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 20px;
+  background: #f1f4f9;
+  min-height: 100vh;
+}
+
+.visa-form-box {
+  background-color: white;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+}
+
+.visa-form-box h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #003366;
+}
+
+.visa-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.visa-form input,
+.visa-form textarea {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  width: 100%;
+  background: #f9f9f9;
+}
+
+.visa-form textarea {
+  resize: vertical;
+}
+
+.visa-form button {
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.visa-form button:hover {
+  background-color: #0056b3;
+}

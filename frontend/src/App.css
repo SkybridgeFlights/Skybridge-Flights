@@ -1,0 +1,115 @@
+/* في App.css */
+
+/* القائمة الجانبية */
+.sidebar {
+  background-color: #1e3a8a;
+  color: white;
+  width: 250px;
+  padding: 20px 15px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+  transform: translateX(0);
+  z-index: 1000;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 25px;
+}
+
+.sidebar ul li {
+  margin-bottom: 18px;
+}
+
+.sidebar ul li a, 
+.sidebar ul li button {
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 0;
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li button:hover {
+  color: #ffdd57;
+}
+
+/* زر إغلاق القائمة */
+.close-menu-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  position: absolute;
+  top: 12px;
+  right: 15px;
+}
+
+/* إخفاء القائمة على الشاشات الصغيرة */
+.sidebar:not(.open) {
+  transform: translateX(-100%);
+}
+
+/* زر القائمة العلوية */
+.topbar {
+  background-color: #1e3a8a;
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: sticky;
+  top: 0;
+  z-index: 1001;
+}
+
+.menu-btn {
+  background-color: #2553c4;
+  border: none;
+  padding: 8px 14px;
+  font-size: 18px;
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.menu-btn:hover {
+  background-color: #16336b;
+}
+
+.company-title {
+  font-size: 28px;
+  font-weight: 900;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+}
+
+/* المحتوى الرئيسي لتعديل الهامش عند إخفاء القائمة */
+.main {
+  margin-left: 250px;
+  padding: 25px;
+  transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .main {
+    margin-left: 0;
+  }
+  .sidebar {
+    width: 280px;
+    padding-top: 55px;
+  }
+}

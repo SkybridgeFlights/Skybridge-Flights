@@ -1,0 +1,103 @@
+/* src/pages/AdminPanel.css */
+
+.admin-panel-container {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f4f7fb;
+}
+
+/* === Sidebar === */
+.admin-sidebar {
+  width: 260px;
+  background: linear-gradient(to bottom right, #003366, #004080);
+  color: #fff;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-sidebar h2 {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.admin-btn {
+  background-color: #0059b3;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-align: left;
+  transition: background 0.3s ease;
+  width: 100%;
+  cursor: pointer;
+}
+
+.admin-btn:hover {
+  background-color: #0073e6;
+}
+
+.admin-link {
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  display: block;
+  width: 100%;
+}
+
+/* === Main Content === */
+.admin-content {
+  flex: 1;
+  padding: 40px;
+  background-color: #f9fafb;
+}
+
+.admin-welcome {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  border-left: 5px solid #0073e6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+.admin-welcome h3 {
+  color: #003366;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.admin-settings {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.admin-settings h4 {
+  color: #004080;
+  margin-bottom: 20px;
+}
+
+.form-check-input {
+  cursor: pointer;
+}
+
+.btn-success {
+  background-color: #0073e6;
+  border: none;
+  padding: 10px 18px;
+  font-size: 15px;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+}
+
+.btn-success:hover {
+  background-color: #005bb5;
+}

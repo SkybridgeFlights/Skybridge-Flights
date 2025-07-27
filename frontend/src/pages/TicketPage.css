@@ -1,0 +1,158 @@
+/* frontend/src/pages/TicketPage.css */
+
+.ticket-container {
+  background-color: #ffffff;
+  max-width: 850px;
+  margin: 40px auto;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #2c3e50;
+  position: relative;
+  border-top: 6px solid #004aad;
+}
+
+.ticket-title {
+  text-align: center;
+  font-size: 32px;
+  color: #004aad;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+
+.ticket-logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #004aad;
+}
+
+.ticket-logo-img {
+  height: 150px;
+  object-fit: contain;
+}
+
+.ticket-qr {
+  text-align: center;
+}
+
+.verify-text {
+  font-size: 12px;
+  color: #777;
+  margin-top: 6px;
+}
+
+.ticket-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.ticket-section {
+  flex: 1;
+  min-width: 300px;
+  background-color: #f4f8ff;
+  padding: 22px;
+  border-radius: 10px;
+  border-left: 5px solid #004aad;
+}
+
+.ticket-section h4 {
+  margin-bottom: 14px;
+  color: #004aad;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.ticket-section p {
+  margin: 6px 0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.ticket-footer {
+  text-align: center;
+  border-top: 1px solid #ddd;
+  padding-top: 30px;
+  margin-top: 30px;
+}
+
+.signature {
+  height: 90px;
+  margin-bottom: 12px;
+}
+
+.authority {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+.print-btn {
+  background-color: #004aad;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.print-btn:hover {
+  background-color: #003a94;
+}
+
+.loading {
+  text-align: center;
+  margin-top: 100px;
+  font-size: 20px;
+  color: #888;
+  font-weight: 500;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .ticket-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .ticket-body {
+    flex-direction: column;
+  }
+
+  .ticket-section {
+    min-width: 100%;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .ticket-container {
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    border-top: none;
+  }
+
+  .ticket-section {
+    border-left: none;
+  }
+
+  .ticket-footer {
+    border-top: none;
+  }
+}

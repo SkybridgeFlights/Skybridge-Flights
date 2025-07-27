@@ -1,0 +1,306 @@
+/* ==== الصفحة الرئيسية Skybridge Flights ==== */
+.homepage {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #fff;
+  text-align: center;
+  min-height: 100vh;
+  background-color: #f0f4f8;
+}
+
+/* ==== Hero Section (Slider) ==== */
+.hero {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-image 1s ease-in-out;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom right, rgba(0,0,0,0.4), rgba(0,0,0,0.7));
+  z-index: 1;
+}
+
+.overlay {
+  position: relative;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.65);
+  padding: 60px 40px;
+  border-radius: 16px;
+  max-width: 800px;
+  width: 90%;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.hero-title {
+  font-size: 60px;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.6);
+}
+
+.hero-subtitle {
+  font-size: 24px;
+  margin: 20px 0 35px;
+  color: #e0e0e0;
+}
+
+.hero-btn {
+  display: inline-block;
+  padding: 14px 35px;
+  font-size: 20px;
+  font-weight: 600;
+  background-color: #0d6efd;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.hero-btn:hover {
+  background-color: #084298;
+  transform: scale(1.05);
+}
+
+/* ==== Features Section ==== */
+.features-section {
+  background-color: #ffffff;
+  padding: 80px 20px;
+  color: #333;
+  border-top: 10px solid #0d6efd;
+  border-bottom: 10px solid #0d6efd;
+}
+
+.features-section h2 {
+  font-weight: bold;
+  color: #0d6efd;
+  margin-bottom: 50px;
+  font-size: 32px;
+}
+
+.feature-icon {
+  width: 70px;
+  height: 70px;
+  margin-bottom: 20px;
+}
+
+.features-section h4 {
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 15px;
+}
+
+.features-section p {
+  font-size: 16px;
+  color: #555;
+}
+
+/* ==== Reviews Section ==== */
+.reviews-section {
+  background-color: #f8f9fa;
+  padding: 70px 20px;
+  color: #333;
+  margin-top: 60px;
+  border-top: 8px solid #0d6efd;
+  border-radius: 10px;
+}
+
+.reviews-section h2 {
+  font-weight: bold;
+  color: #0d6efd;
+  margin-bottom: 35px;
+}
+
+.review-form {
+  max-width: 600px;
+  margin: auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 0 12px rgba(13, 110, 253, 0.15);
+}
+
+.review-form input,
+.review-form textarea {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 18px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.review-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.review-form button {
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  background-color: #ffc107;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.review-form button:hover {
+  background-color: #e0a800;
+}
+
+.review-form .stars {
+  font-size: 30px;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+/* Sort Container */
+.sort-container {
+  max-width: 320px;
+  margin: 0 auto 35px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sort-container label {
+  font-weight: 600;
+  color: #333;
+  margin-right: 10px;
+}
+
+.sort-container .form-select {
+  flex: 1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+}
+
+/* Reviews List */
+.reviews-list {
+  max-width: 800px;
+  margin: 50px auto 0;
+  padding: 0 15px;
+}
+
+.reviews-list .review-item {
+  background: white;
+  border-left: 5px solid #0d6efd;
+  padding: 18px 22px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.08);
+  text-align: left;
+}
+
+.reviews-list .review-item .rating {
+  font-size: 20px;
+  color: gold;
+}
+
+.reviews-list .review-item .name {
+  font-weight: bold;
+  font-size: 17px;
+  margin-top: 5px;
+}
+
+.reviews-list .review-item p {
+  margin-top: 10px;
+  font-size: 15px;
+  color: #555;
+}
+
+.reviews-list .review-item .btn-danger {
+  margin-top: 12px;
+  font-size: 14px;
+  padding: 6px 12px;
+}
+
+/* ==== Warning Modal ==== */
+.warning-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.warning-content {
+  background: #ffffff;
+  padding: 25px 30px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: scaleUp 0.3s ease-in-out;
+}
+
+.warning-content h2 {
+  color: #e63946;
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.warning-content p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+.warning-btn {
+  background: #0077b6;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+.warning-btn:hover {
+  background: #023e8a;
+}
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

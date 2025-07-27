@@ -1,0 +1,1 @@
+import airports from '../data/airports.js';
