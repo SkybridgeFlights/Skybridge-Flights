@@ -91,22 +91,15 @@ const FlightsPage = () => {
         return;
       }
 
-      const searchURL = `${API_BASE_URL}/api/flights/search`;
-      console.log('🔍 Fetching flights from:', searchURL, {
-        from: fromTrimmed,
-        to: toTrimmed,
-        date: depDate,
-        returnDate: tripType === 'round' ? search.returnDate : undefined,
-      });
+      // ✅ بناء رابط البحث يدويًا بدون returnDate=undefined
+      let searchURL = `${API_BASE_URL}/api/flights/search?from=${encodeURIComponent(fromTrimmed)}&to=${encodeURIComponent(toTrimmed)}&date=${depDate}`;
+      if (tripType === 'round' && search.returnDate) {
+        searchURL += `&returnDate=${search.returnDate}`;
+      }
 
-      const response = await axios.get(searchURL, {
-        params: {
-          from: fromTrimmed,
-          to: toTrimmed,
-          date: depDate,
-          returnDate: tripType === 'round' ? search.returnDate : undefined,
-        },
-      });
+      console.log('🔍 Fetching flights from:', searchURL);
+
+      const response = await axios.get(searchURL);
 
       const departureFlights = response.data.outboundFlights || [];
       const returnFlights = response.data.returnFlights || [];

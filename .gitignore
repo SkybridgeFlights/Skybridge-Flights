@@ -49,6 +49,10 @@ cypress/screenshots/
 *.svg
 *.zip
 
+# === NODE MODULES (FRONTEND / BACKEND) ===
+frontend/node_modules/
+backend/node_modules/
+
 # === REACT ===
 *.local
 *.env.production
