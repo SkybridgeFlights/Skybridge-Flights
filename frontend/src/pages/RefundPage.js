@@ -1,4 +1,3 @@
-// frontend/src/pages/RefundPage.js
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -7,12 +6,13 @@ import './RefundPage.css';
 
 const RefundPage = () => {
   const { bookingId } = useParams();
-  const location = useLocation(); // لقراءة السبب القادم من المودال
+  const location = useLocation();
   const [booking, setBooking] = useState(null);
   const [reason, setReason] = useState(location.state?.reason || 'Change of plans');
   const [customReason, setCustomReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [refundStatus, setRefundStatus] = useState(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,6 +51,7 @@ const RefundPage = () => {
 
     try {
       setSubmitting(true);
+      setError(null);
       const token = localStorage.getItem('token');
       const res = await axios.post(
         `${API_BASE_URL}/api/refunds`,
@@ -59,11 +60,12 @@ const RefundPage = () => {
       );
 
       setRefundStatus(res.data.refundRequest.status);
-      alert(`Refund request submitted. Amount: €${res.data.refundRequest.amount}`);
+      alert(`✅ Refund request submitted. Amount: €${res.data.refundRequest.amount}`);
       navigate('/bookings');
     } catch (error) {
       console.error('Refund request failed:', error);
-      alert('Failed to create refund request.');
+      const msg = error.response?.data?.error || '❌ Failed to create refund request.';
+      setError(msg);
     } finally {
       setSubmitting(false);
     }
@@ -111,6 +113,12 @@ const RefundPage = () => {
             ></textarea>
           )}
         </div>
+
+        {error && (
+          <div className="refund-error">
+            {error}
+          </div>
+        )}
 
         <div className="refund-actions">
           <button className="btn-back" onClick={() => navigate('/bookings')}>
