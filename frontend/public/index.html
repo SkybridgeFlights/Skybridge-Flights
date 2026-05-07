@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <!-- Favicon & PWA -->
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <!-- Viewport & theme -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#2f49d1" />
+
+    <!-- Primary SEO meta -->
+    <title>Skybridge Flights | Compare Flight Prices & Find Best Deals</title>
+    <meta
+      name="description"
+      content="Skybridge Flights – Search and compare flight prices from hundreds of airlines and trusted travel providers worldwide. Find the best deals in seconds."
+    />
+    <meta name="keywords" content="cheap flights, compare flights, flight deals, book flights, Skybridge Flights, travel search" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph (Facebook / LinkedIn) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Skybridge Flights" />
+    <meta property="og:title" content="Skybridge Flights | Compare Flight Prices" />
+    <meta
+      property="og:description"
+      content="Search and compare flight deals from trusted travel providers worldwide. No hidden fees from Skybridge."
+    />
+    <meta property="og:image" content="%PUBLIC_URL%/logo192.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Skybridge Flights | Compare Flight Prices" />
+    <meta
+      name="twitter:description"
+      content="Search and compare flight deals from trusted travel providers worldwide."
+    />
+    <meta name="twitter:image" content="%PUBLIC_URL%/logo192.png" />
+
+    <!-- Performance preconnects -->
+    <link rel="preconnect" href="https://js.stripe.com" crossorigin />
+    <link rel="preconnect" href="https://www.paypal.com" crossorigin />
+    <link rel="preconnect" href="https://tpwdg.com" crossorigin />
+
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3"></script>
+
+    <!-- PayPal SDK (enable only when CLIENT_ID is available) -->
+    <!--
+    <script
+      src="https://www.paypal.com/sdk/js?client-id=XXXXX&currency=USD"
+      data-sdk-integration-source="button-factory">
+    </script>
+    -->
+
+    <!-- Travelpayouts Verification Script (affiliate tracking — do not remove) -->
+    <script data-noptimize="1" data-cfasync="false" data-wpfc-render="false">
+      (function () {
+        var script = document.createElement("script");
+        script.async = 1;
+        script.src = "https://emrld.cc/NTA2NjEx.js?t=506611";
+        document.head.appendChild(script);
+      })();
+    </script>
+  </head>
+
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+
+    <div id="root"></div>
+  </body>
+</html>

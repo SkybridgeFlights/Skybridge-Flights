@@ -1,0 +1,163 @@
+/* src/pages/AllBookingsPage.css — refreshed with horizontal scroll */
+
+/* ===== Theme ===== */
+:root {
+  --bg: #f6f8fb;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #475569;
+  --border: #e2e8f0;
+  --shadow: 0 10px 30px rgba(2, 6, 23, .08);
+
+  --primary: #2563eb;
+  --info: #14b8a6;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --secondary: #64748b;
+}
+
+/* ===== Page wrapper ===== */
+.admin-bookings-page {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif;
+  color: var(--text);
+}
+
+.admin-bookings-page .container {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 18px 18px 12px;
+}
+
+/* ===== Title ===== */
+.admin-bookings-page h2 {
+  font-weight: 800;
+  letter-spacing: .2px;
+  margin: 0 0 12px;
+  color: var(--text);
+}
+
+/* ===== Table wrapper (responsive + horizontal scroll) ===== */
+.table-responsive {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow-x: auto;                /* ⬅️ التمرير الجانبي */
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  background: #fff;
+  box-shadow: inset 0 1px 0 rgba(2,6,23,.02);
+}
+
+/* ===== Table ===== */
+.table {
+  width: 100%;
+  margin-bottom: 0;
+  min-width: 1100px;               /* ⬅️ يمنع انضغاط الأعمدة ويُظهر scroll عند اللزوم */
+  border-collapse: collapse;
+}
+
+.table thead th {
+  background: #0f172a;
+  color: #fff;
+  font-weight: 700;
+  font-size: .92rem;
+  letter-spacing: .2px;
+  text-transform: none;
+  padding: 12px 10px;
+  border: 0 !important;
+  white-space: nowrap;
+}
+
+.table tbody td {
+  vertical-align: middle;
+  text-align: center;
+  padding: 12px 10px;
+  border-color: var(--border);
+  color: var(--text);
+  font-size: .95rem;
+  white-space: nowrap;             /* نص الأعمدة لا يلتف */
+}
+
+.table tbody tr:hover { background: #f8fafc; }
+.table tbody tr:nth-child(even) { background: #fbfdff; }
+
+/* على الشاشات الصغيرة نخفي بعض الأعمدة الثانوية لتقليل العرض الظاهر (يبقى scroll موجود) */
+@media (max-width: 900px) {
+  .table thead th:nth-child(2),
+  .table thead th:nth-child(3),
+  .table tbody td:nth-child(2),
+  .table tbody td:nth-child(3) { display: none; }
+}
+
+/* ===== Badges ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 700;
+  font-size: .8rem;
+  border: 1px solid var(--border);
+  background: #f8fafc;
+  color: var(--muted);
+}
+.badge.bg-success   { background: rgba(34,197,94,.1);  color: #166534; border-color: rgba(34,197,94,.25); }
+.badge.bg-warning   { background: rgba(245,158,11,.12); color: #92400e; border-color: rgba(245,158,11,.25); }
+.badge.bg-danger    { background: rgba(239,68,68,.12);  color: #991b1b; border-color: rgba(239,68,68,.25); }
+.badge.bg-secondary { background: rgba(100,116,139,.12); color: #334155; border-color: rgba(100,116,139,.25); }
+
+/* ===== Amount cell ===== */
+.amount-cell { line-height: 1.25; }
+.amount-cell .num { font-weight: 800; letter-spacing: .2px; }
+.amount-cell .muted { color: var(--muted); font-size: .82rem; }
+
+/* ===== Buttons ===== */
+.btn {
+  font-size: .88rem;
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 0;
+  font-weight: 700;
+  transition: transform .06s ease, filter .15s ease;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn-info { background-color: var(--info); color: #fff; }
+.btn-info:hover { filter: brightness(.95); }
+
+.btn-success { background-color: var(--success); color: #fff; }
+.btn-success:hover { filter: brightness(.95); }
+
+.btn-danger {
+  background-color: rgba(239,68,68,.12);
+  color: #991b1b;
+  border: 1px solid rgba(239,68,68,.25);
+}
+.btn-danger:hover { background: rgba(239,68,68,.2); }
+
+td .btn + .btn { margin-left: 8px; }
+
+/* ===== Modal polish ===== */
+.modal-content {
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.modal-header, .modal-footer {
+  background: #f8fafc;
+  border-color: var(--border);
+}
+.modal-title { font-weight: 800; color: var(--text); }
+.modal-body h5 { margin-top: .75rem; font-weight: 700; color: var(--text); }
+.modal-body ul { padding-left: 1.2rem; }
+.modal-body ul li { margin-bottom: 6px; line-height: 1.45; color: var(--muted); }
+
+/* ===== Helpers ===== */
+.nowrap { white-space: nowrap; }
+.mini   { font-size: .78rem; color: var(--muted); }
+.text-right { text-align: right; }
+.text-left  { text-align: left; }

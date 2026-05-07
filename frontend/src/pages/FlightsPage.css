@@ -1,0 +1,131 @@
+/* ═══════════════════════════════════════════════════
+   FLIGHTS PAGE — full-viewport embedded search
+   ═══════════════════════════════════════════════════ */
+
+/*
+  The outer container fills exactly the viewport below the
+  sticky topbar. overflow:hidden prevents any page-level
+  scrollbar — the only scroll is inside the iframe itself.
+
+  Desktop topbar: min-height 82px → calc(100vh - 82px)
+  Mobile  topbar: min-height 60px → calc(100vh - 60px)
+*/
+.flights-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 82px);
+  overflow: hidden;
+  background: #f0f4ff;
+}
+
+/* ── Info bar ─────────────────────────────────────── */
+.flights-info-bar {
+  flex-shrink: 0;
+  background: linear-gradient(90deg, #1a318a, #2f49d1);
+  padding: 10px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.flights-info-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.flights-info-left {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.flights-page-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.flights-page-subtitle {
+  margin: 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.78);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.flights-disclosure {
+  margin: 0;
+  font-size: 0.73rem;
+  color: rgba(255, 255, 255, 0.52);
+  max-width: 380px;
+  text-align: right;
+  line-height: 1.5;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* ── Widget wrapper ───────────────────────────────── */
+.flights-widget-wrapper {
+  flex: 1;
+  min-height: 0; /* required: lets flex child shrink below content size */
+  position: relative;
+  overflow: hidden;
+}
+
+.flights-iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   MOBILE
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .flights-page {
+    height: calc(100vh - 60px); /* matches mobile topbar */
+  }
+
+  .flights-info-bar {
+    padding: 8px 14px;
+  }
+
+  .flights-info-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .flights-info-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .flights-page-title {
+    font-size: 0.95rem;
+  }
+
+  .flights-page-subtitle {
+    font-size: 0.78rem;
+  }
+
+  .flights-disclosure {
+    text-align: left;
+    max-width: 100%;
+    font-size: 0.7rem;
+    display: none; /* hide on very small screens to save vertical space */
+  }
+}
+
+@media (max-width: 480px) {
+  .flights-info-bar {
+    padding: 7px 12px;
+  }
+}

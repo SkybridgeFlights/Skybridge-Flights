@@ -1,0 +1,223 @@
+/* BookingSettingsPage.css — improved */
+
+/* ====== Theme tokens ====== */
+:root {
+  --bg: #f6f8fb;
+  --card-bg: #ffffff;
+  --text: #0f172a;
+  --muted: #475569;
+  --primary: #2563eb;
+  --primary-strong: #1d4ed8;
+  --ring: rgba(37, 99, 235, .35);
+  --border: #e2e8f0;
+  --shadow: 0 10px 30px rgba(2, 6, 23, .08);
+  --radius: 12px;
+}
+
+/* ====== Page container ====== */
+.settings-wrap {
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 24px 16px;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif;
+}
+
+/* ====== Headings ====== */
+h2 {
+  font-weight: 800;
+  color: var(--text);
+  margin: 0 0 16px;
+  letter-spacing: .2px;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 18px 0 10px;
+}
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title .emoji {
+  font-size: 1.1rem;
+}
+
+/* ====== Card sections ====== */
+.settings-section {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+  margin-bottom: 16px;
+}
+
+/* ====== Grid helpers ====== */
+.split-2 {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 720px) {
+  .split-2 { grid-template-columns: 1fr 1fr; }
+}
+.split-3 {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 900px) {
+  .split-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ====== Labels & controls ====== */
+label {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  display: block;
+}
+
+input[type="number"],
+input[type="text"],
+textarea,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--text);
+  font-size: 0.96rem;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+textarea { resize: vertical; min-height: 90px; }
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+/* inline checkbox row */
+.form-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 12px;
+}
+.form-check-label {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* helper text */
+.help {
+  color: var(--muted);
+  font-size: .86rem;
+  margin-top: 4px;
+}
+
+/* divider */
+hr {
+  margin: 18px 0;
+  border: 0;
+  border-top: 1px dashed var(--border);
+}
+
+/* ====== Buttons ====== */
+.btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-ghost {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .06s ease, box-shadow .15s ease, background .15s ease;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, .25);
+}
+.btn-primary:hover { background: var(--primary-strong); }
+
+.btn-secondary {
+  background: #f1f5f9;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: #e9eef6; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+}
+.btn-ghost:hover { background: #f8fafc; }
+
+.btn-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+.btn-danger:hover { background: #fecaca; }
+
+/* ====== Sticky Save bar (optional, visible on long pages) ====== */
+.save-bar {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0), #fff 40%);
+  padding-top: 8px;
+  margin-top: 10px;
+}
+
+/* ====== Inline action link (for “Refund Policy Rules” button) ====== */
+.inline-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ====== Badge (small status label) ====== */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  background: #f8fafc;
+}
+
+/* ====== Spacing utilities ====== */
+.mt-1 { margin-top: 6px; }
+.mt-2 { margin-top: 10px; }
+.mt-3 { margin-top: 16px; }
+.mt-4 { margin-top: 22px; }

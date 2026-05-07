@@ -1,0 +1,70 @@
+# Node dependencies
+**/node_modules/
+
+# Environment files
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+!Backend/.env.example
+!frontend/.env.example
+
+# Logs
+*.log
+logs/
+**/logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build and cache artifacts
+build/
+dist/
+coverage/
+out/
+.cache/
+.next/
+.vite/
+.temp/
+.tmp/
+tmp/
+temp/
+cache/
+**/tmp/
+**/temp/
+**/cache/
+*.tsbuildinfo
+.eslintcache
+jest-coverage/
+cypress/videos/
+cypress/screenshots/
+
+# Uploads and runtime files
+Backend/uploads/
+Backend/upload/
+Backend/temp/
+Backend/tmp/
+frontend/uploads/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+.claude/
+*.sublime-workspace
+*.sublime-project
+*.swp
+*.bak
+*.tmp
+*.orig
+
+# Local accidental artifacts
+code.txt
+/1
+/git
+/main
+/react-scripts
+/package-lock.json

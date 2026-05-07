@@ -1,0 +1,168 @@
+/* ══════════════════════════════════════════════════════════
+   APP SHELL — topbar, backdrop, layout
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Root layout ── */
+.app {
+  min-height: 100vh;
+  background: var(--c-bg, #f8faff);
+}
+
+/* ── Sidebar backdrop ── */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 15, 40, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 999;
+  animation: backdropIn 0.22s var(--ease, ease);
+}
+
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Topbar ─────────────────────────────────────────────── */
+.topbar {
+  background: linear-gradient(100deg, #162a99 0%, #2f49d1 55%, #3d58e8 100%);
+  color: #fff;
+  min-height: 64px;
+  padding: 12px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 1001;
+  /* multi-layer shadow: depth + inner highlight */
+  box-shadow:
+    0 4px 24px rgba(15, 40, 140, 0.32),
+    0 1px 0 rgba(255, 255, 255, 0.10) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.12) inset;
+}
+
+/* ── Menu button ── */
+.menu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  padding: 9px 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: background var(--t-base, 0.22s), transform var(--t-fast, 0.15s), box-shadow var(--t-base, 0.22s);
+  backdrop-filter: blur(8px);
+  letter-spacing: 0.01em;
+  flex-shrink: 0;
+}
+
+.menu-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.menu-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.menu-icon {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.menu-text {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* ── Brand ── */
+.brand-block {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.company-title {
+  font-size: clamp(1.2rem, 3vw, 1.75rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: #fff;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.28);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Main content ── */
+.main {
+  margin-left: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .topbar {
+    min-height: 56px;
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .menu-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .sidebar {
+    width: 280px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   DARK MODE
+   ══════════════════════════════════════════════════════════ */
+body.dark-mode {
+  background: #060d1a;
+  color: #f1f5f9;
+}
+
+body.dark-mode .app {
+  background: #060d1a;
+}
+
+body.dark-mode .main {
+  background: #060d1a;
+}
+
+body.dark-mode .topbar {
+  background: linear-gradient(100deg, #07102a 0%, #0f1e6a 60%, #1a2d99 100%);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+}
+
+body.dark-mode .menu-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.13);
+}
+
+body.dark-mode .menu-btn:hover {
+  background: rgba(255, 255, 255, 0.13);
+}
+
+body.dark-mode .sidebar-backdrop {
+  background: rgba(0, 0, 0, 0.68);
+}

@@ -1,0 +1,287 @@
+/* ================================
+   Passport Catalog (Admin) Styles
+   ================================ */
+
+/* متغيرات للألوان متطابقة تقريباً مع Modals.css لضمان التجانس */
+:root{
+  --pc-bg: #ffffff;
+  --pc-fg: #0f172a;           /* slate-900 */
+  --pc-muted: #475569;        /* slate-600 */
+  --pc-border: #e2e8f0;       /* slate-200 */
+  --pc-shadow: 0 12px 30px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06);
+  --pc-radius: 14px;
+
+  --pc-accent: #2563eb;       /* indigo-600 */
+  --pc-accent-contrast: #fff;
+
+  --pc-chip-bg: #eef2ff;      /* indigo-50 */
+  --pc-chip-fg: #1e293b;      /* slate-800 */
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --pc-bg: #0b1020;
+    --pc-fg: #e2e8f0;
+    --pc-muted: #a3b2c7;
+    --pc-border: rgba(148,163,184,.22);
+    --pc-shadow: 0 12px 30px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.35);
+
+    --pc-chip-bg: rgba(99,102,241,.18);
+    --pc-chip-fg: #e8ecf7;
+  }
+}
+
+/* غلاف الصفحة */
+.pc-wrap{
+  max-width: 1100px;
+  margin-inline: auto;
+}
+
+/* العنوان الرئيسي */
+.pc-title{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  color: var(--pc-fg);
+  margin: 8px 0 16px;
+}
+
+/* بطاقات عامة (بديلة لبطاقة البوتستراب) */
+.pc-card{
+  background: var(--pc-bg);
+  color: var(--pc-fg);
+  border: 1px solid var(--pc-border);
+  border-radius: var(--pc-radius);
+  box-shadow: var(--pc-shadow);
+  padding: 14px;
+}
+
+.pc-card + .pc-card{ margin-top: 14px; }
+
+/* رؤوس الأقسام داخل البطاقة */
+.pc-card h5{
+  margin: 0 0 8px;
+  font-weight: 800;
+  color: var(--pc-fg);
+}
+
+/* أزرار أساسية */
+.pc-btn{
+  appearance: none;
+  border: 1px solid var(--pc-border);
+  background: #f8fafc;
+  color: #0f172a;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  transition: transform .06s ease, box-shadow .15s ease, background .15s ease;
+}
+.pc-btn:hover{ transform: translateY(-1px); box-shadow: 0 8px 18px rgba(0,0,0,.08); }
+.pc-btn:active{ transform: translateY(0); box-shadow: none; }
+
+.pc-btn--primary{
+  background: var(--pc-accent);
+  color: var(--pc-accent-contrast);
+  border-color: transparent;
+}
+.pc-btn--muted{
+  background: var(--pc-chip-bg);
+  color: var(--pc-chip-fg);
+}
+
+/* شبكة العمودين الرئيسية */
+.pc-grid{
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 14px;
+}
+@media (max-width: 992px){
+  .pc-grid{ grid-template-columns: 1fr; }
+}
+
+/* ======= مكوّن المراكز (Centers) ======= */
+
+.pc-center-row{
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 8px;
+  align-items: center;
+  border: 1px dashed color-mix(in srgb, var(--pc-border) 80%, transparent);
+  padding: 8px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--pc-bg) 80%, transparent);
+}
+.pc-center-row + .pc-center-row{ margin-top: 8px; }
+
+/* محوّل التفعيل */
+.pc-switch{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--pc-muted);
+}
+.pc-switch input[type="checkbox"]{
+  width: 42px; height: 24px; appearance: none;
+  border-radius: 999px; position: relative;
+  background: #e5e7eb; outline: none; border: 1px solid var(--pc-border);
+  transition: background .15s ease;
+}
+.pc-switch input[type="checkbox"]::after{
+  content: "";
+  position: absolute; top: 2px; left: 2px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #ffffff; transition: transform .15s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,.18);
+}
+.pc-switch input[type="checkbox"]:checked{ background: color-mix(in srgb, var(--pc-accent) 75%, #ffffff); }
+.pc-switch input[type="checkbox"]:checked::after{ transform: translateX(18px); }
+
+/* ======= مكوّن الخدمات (Services) ======= */
+
+/* كتلة خدمة واحدة */
+.pc-service{
+  border: 1px solid var(--pc-border);
+  border-radius: 14px;
+  padding: 12px;
+  background: color-mix(in srgb, var(--pc-bg) 92%, transparent);
+  box-shadow: 0 1px 0 rgba(0,0,0,.02) inset;
+}
+.pc-service + .pc-service{ margin-top: 10px; }
+
+/* صف حقول رأس الخدمة */
+.pc-service-head{
+  display: grid;
+  grid-template-columns: 1.1fr 1.4fr .7fr .7fr auto;
+  gap: 10px;
+  align-items: end;
+}
+@media (max-width: 920px){
+  .pc-service-head{
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* تسمية الحقول */
+.pc-label{
+  font-size: .85rem;
+  font-weight: 800;
+  color: var(--pc-muted);
+  margin-bottom: 4px;
+}
+
+/* الحقول */
+.pc-input{
+  width: 100%;
+  border: 1px solid var(--pc-border);
+  border-radius: 10px;
+  background: rgba(255,255,255,.02);
+  color: var(--pc-fg);
+  padding: 8px 10px;
+}
+.pc-input::placeholder{ color: color-mix(in srgb, var(--pc-muted) 85%, transparent); }
+
+/* شارة Enabled */
+.pc-chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--pc-chip-bg);
+  color: var(--pc-chip-fg);
+  font-weight: 700;
+  border: 1px solid var(--pc-border);
+}
+
+/* ===== المستندات المطلوبة داخل الخدمة ===== */
+.pc-docs{
+  margin-top: 10px;
+  border-top: 1px dashed var(--pc-border);
+  padding-top: 8px;
+}
+
+.pc-doc-row{
+  display: grid;
+  grid-template-columns: 1fr 1.2fr .9fr .35fr .35fr;
+  gap: 8px;
+  align-items: center;
+  padding: 6px;
+  border: 1px dashed color-mix(in srgb, var(--pc-border) 80%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--pc-bg) 86%, transparent);
+}
+.pc-doc-row + .pc-doc-row{ margin-top: 6px; }
+
+.pc-doc-actions{
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+}
+
+/* زر إضافة مستند + إزالة خدمة */
+.pc-actions{
+  display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;
+}
+
+/* صف أعلى القائمة (البحث / العدّاد) إن رغبت لاحقاً */
+.pc-toolbar{
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 8px; margin: 6px 0 12px;
+}
+
+/* محاذاة صغيرة للقيم الرقمية */
+.pc-input[type="number"]{
+  text-align: right;
+}
+
+/* رسائل */
+.pc-note{
+  font-size: .85rem;
+  color: var(--pc-muted);
+}
+
+/* تحسين شكل قائمة UL للمراكز إذا استخدمت <ul> */
+.pc-list{
+  list-style: none; padding: 0; margin: 8px 0 0;
+}
+.pc-list > li + li{ margin-top: 8px; }
+
+/* تلميحات صغيرة بجانب الحقول */
+.pc-hint{
+  font-size: .75rem;
+  color: var(--pc-muted);
+}
+
+/* أزرار صغيرة داخل العناصر */
+.pc-btn--sm{ padding: 6px 10px; border-radius: 8px; font-weight: 700; }
+
+/* زر حذف (لون تحذيري خفيف) */
+.pc-btn--danger{
+  background: #fee2e2;
+  color: #7f1d1d;
+  border-color: #fecaca;
+}
+@media (prefers-color-scheme: dark){
+  .pc-btn--danger{
+    background: rgba(244,63,94,.16);
+    color: #fecaca;
+    border-color: rgba(248,113,113,.28);
+  }
+}
+
+/* ===== تحسينات صغيرة للـBootstrap الموجود ===== */
+.card.pc-card, .pc-card.card{
+  /* لو استعملت div.card من البوتستراب نضمن نفس الأسلوب */
+  border: 1px solid var(--pc-border);
+  border-radius: var(--pc-radius) !important;
+  background: var(--pc-bg);
+  box-shadow: var(--pc-shadow);
+}
+.form-label.pc-label, .pc-label.form-label{ margin-bottom: 4px; }
+
+/* زر الحفظ السفلي */
+.pc-save{
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}

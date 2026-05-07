@@ -1,0 +1,288 @@
+:root{
+  --sb-bg: #ffffff;
+  --sb-fg: #0f172a;           /* slate-900 */
+  --sb-muted: #475569;        /* slate-600 */
+  --sb-border: #e2e8f0;       /* slate-200 */
+  --sb-shadow: 0 20px 50px rgba(0,0,0,.25), 0 2px 8px rgba(0,0,0,.12);
+  --sb-radius: 16px;
+  --sb-radius-sm: 12px;
+  --sb-z: 9999;
+
+  --sb-accent: #2563eb;       /* indigo-600 */
+  --sb-accent-contrast: #fff;
+
+  --sb-badge-bg: #eef2ff;     /* indigo-50 */
+  --sb-badge-fg: #1e293b;     /* slate-800 */
+  --sb-internal-bg: #fff7ed;  /* amber-50 */
+  --sb-internal-fg: #92400e;
+
+  --sb-overlay-bg: rgba(2,6,23,.62); /* slate-950 @62% */
+  --sb-blur: 10px;
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --sb-bg: #0b1020;
+    --sb-fg: #e2e8f0;
+    --sb-muted: #a3b2c7;
+    --sb-border: rgba(148,163,184,.22);
+    --sb-shadow: 0 20px 50px rgba(0,0,0,.6), 0 2px 8px rgba(0,0,0,.5);
+    --sb-badge-bg: rgba(99,102,241,.18);  /* indigo-ish */
+    --sb-badge-fg: #e8ecf7;
+    --sb-internal-bg: rgba(250,204,21,.12);
+    --sb-internal-fg: #fde68a;
+    --sb-overlay-bg: rgba(2,6,23,.75);
+  }
+}
+
+/* ===== Overlay ===== */
+.sb-overlay,
+.ms-overlay{
+  position: fixed; inset: 0;
+  z-index: var(--sb-z);
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: auto;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.sb-overlay::before,
+.ms-overlay::before{
+  content: "";
+  position: absolute; inset: 0;
+  background: var(--sb-overlay-bg);
+  backdrop-filter: blur(var(--sb-blur));
+  -webkit-backdrop-filter: blur(var(--sb-blur));
+  opacity: 0; animation: sb-fade .18s ease-out forwards;
+}
+@keyframes sb-fade { to { opacity: 1; } }
+
+/* ===== Modal ===== */
+.sb-modal,
+.ms-modal{
+  position: relative;
+  z-index: calc(var(--sb-z) + 1);
+  width: 100%;
+  max-width: 960px;
+  margin: 24px 16px;
+  background: var(--sb-bg);
+  color: var(--sb-fg);
+  border-radius: var(--sb-radius);
+  box-shadow: var(--sb-shadow);
+  border: 1px solid var(--sb-border);
+
+  max-height: 92vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  transform: translateY(8px) scale(.98);
+  opacity: 0;
+  animation: sb-pop .22s cubic-bezier(.22,1,.36,1) forwards;
+
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+
+  /* أخبر المتصفح بدعم الثيمينغ */
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  .sb-modal, .ms-modal { color-scheme: dark; }
+}
+@keyframes sb-pop{ to { transform: translateY(0) scale(1); opacity: 1; } }
+
+/* ===== Header / Body / Footer ===== */
+.sb-modal-header,
+.ms-modal > .d-flex:first-child{
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--sb-border);
+  background: var(--sb-bg);
+}
+.sb-modal-title{
+  margin: 0; font-size: 1.12rem; font-weight: 800; letter-spacing: .2px;
+}
+.sb-modal-body,
+.ms-modal > div:nth-child(2){
+  padding: 14px 18px;
+  overflow-y: auto !important;
+  max-height: calc(92vh - 112px) !important;   /* header + footer */
+  background: var(--sb-bg);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100,116,139,.55) transparent;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+.sb-modal-body::-webkit-scrollbar{ width: 10px; }
+.sb-modal-body::-webkit-scrollbar-thumb{ background: rgba(100,116,139,.45); border-radius: 999px; }
+.sb-modal-body::-webkit-scrollbar-track{ background: transparent; }
+.sb-modal-footer,
+.ms-modal > div:last-child{
+  display: flex; justify-content: flex-end; gap: 8px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--sb-border);
+  background: var(--sb-bg);
+}
+
+/* ===== Close button ===== */
+.sb-close{
+  appearance: none; border: 0; background: transparent;
+  width: 36px; height: 36px; border-radius: 999px;
+  display: inline-grid; place-items: center;
+  transition: background .15s ease, transform .15s ease;
+  color: var(--sb-fg);
+}
+.sb-close:hover{ background: var(--sb-badge-bg); transform: rotate(90deg); }
+.sb-close:focus-visible{ outline: 2px solid var(--sb-accent); outline-offset: 2px; }
+
+/* ===== Inputs ===== */
+.sb-modal input[type="text"],
+.sb-modal input[type="email"],
+.sb-modal input[type="date"],
+.sb-modal input[type="file"],
+.sb-modal textarea,
+.sb-modal select,
+.ms-modal input[type="text"],
+.ms-modal input[type="email"],
+.ms-modal input[type="date"],
+.ms-modal input[type="file"],
+.ms-modal textarea,
+.ms-modal select{
+  border-radius: 12px; border: 1px solid var(--sb-border);
+  background: rgba(255,255,255,0.02);
+  color: var(--sb-fg);
+}
+.sb-modal .form-control, .sb-modal .form-select{
+  border-radius: 12px; border-color: var(--sb-border); color: var(--sb-fg);
+}
+.sb-modal input::placeholder,
+.sb-modal textarea::placeholder,
+.ms-modal input::placeholder,
+.ms-modal textarea::placeholder {
+  color: color-mix(in srgb, var(--sb-muted) 88%, transparent);
+  opacity: 1;
+}
+.sb-modal select option,
+.sb-modal select optgroup,
+.ms-modal select option,
+.ms-modal select optgroup {
+  color: var(--sb-fg);
+  background: var(--sb-bg);
+}
+.sb-modal select:disabled,
+.ms-modal select:disabled {
+  opacity: .85;
+  color: color-mix(in srgb, var(--sb-fg) 90%, transparent);
+}
+/* زر اختيار الملفات */
+.sb-modal input[type="file"]::file-selector-button,
+.ms-modal input[type="file"]::file-selector-button {
+  border: 1px solid var(--sb-border);
+  background: var(--sb-badge-bg);
+  color: var(--sb-badge-fg);
+  border-radius: 10px;
+  padding: 6px 10px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+/* أوتوفيل كروم */
+.sb-modal input:-webkit-autofill,
+.ms-modal input:-webkit-autofill {
+  -webkit-text-fill-color: var(--sb-fg);
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ===== Buttons ===== */
+.sb-btn{
+  appearance: none; border: 1px solid var(--sb-border); background: var(--sb-bg);
+  color: var(--sb-fg); border-radius: 12px; padding: 10px 14px; font-weight: 800;
+  transition: transform .06s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+}
+.sb-btn:hover{ transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,.08); }
+.sb-btn:active{ transform: translateY(0); box-shadow: none; }
+.sb-btn:focus-visible{ outline: 2px solid var(--sb-accent); outline-offset: 2px; }
+.sb-btn.primary{ background: var(--sb-accent); color: var(--sb-accent-contrast); border-color: transparent; }
+.sb-btn.light{ background: #f1f5f9; color: #0f172a; }
+
+/* ===== Thread (chat) ===== */
+.sb-thread{
+  border: 1px solid var(--sb-border);
+  border-radius: var(--sb-radius-sm);
+  padding: 10px; background: transparent;
+}
+.sb-msg{ margin: 8px 0; }
+.sb-msg .who{ font-weight: 900; color: var(--sb-fg); }
+.sb-msg .meta{ color: var(--sb-muted); font-size: .84rem; margin-left: 6px; }
+.sb-msg .body{ white-space: pre-wrap; margin-top: 2px; }
+
+/* ===== Utility cards ===== */
+.ms-card{
+  border: 1px solid var(--sb-border);
+  border-radius: var(--sb-radius-sm);
+  padding: 12px;
+  background: rgba(2,6,23,.02);
+}
+.ms-label{
+  font-size: .92rem; color: var(--sb-muted); font-weight: 900; margin-bottom: 6px;
+}
+.muted{ color: var(--sb-muted); }
+.bold { font-weight: 900; }
+
+/* ===== Pill / Badge (أساس موحّد عالي التباين) ===== */
+.pill, .badge{
+  display: inline-flex; align-items: center;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: .88rem;
+  font-weight: 900;
+  letter-spacing: .15px;
+  line-height: 1;
+  background: var(--sb-badge-bg);
+  color: var(--sb-badge-fg);
+  border: 1px solid color-mix(in srgb, var(--sb-border) 100%, transparent);
+}
+
+/* داخلية */
+.pill.internal{
+  background: var(--sb-internal-bg);
+  color: var(--sb-internal-fg);
+  border-color: rgba(146,64,14,.35);
+}
+
+/* ===== حالات Status — لايت مود (ألوان قوية وواضحة) ===== */
+.pill[class*="status-"]{ border: 1px solid transparent; }
+.pill.status-pending       { background:#fff7ed; color:#9a3412; border-color:#f78103; }   /* amber */
+.pill.status-under_review  { background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }   /* blue  */
+.pill.status-more_info     { background:#fef9c3; color:#854d0e; border-color:#0af849; }   /* yellow/amber */
+.pill.status-approved      { background:#ecfdf5; color:#065f46; border-color:#a7f3d0; }   /* emerald */
+.pill.status-issued        { background:#e0f2fe; color:#075985; border-color:#bae6fd; }   /* sky   */
+.pill.status-rejected      { background:#fef2f2; color:#991b1b; border-color:#fecaca; }   /* rose  */
+.pill.status-cancelled     { background:#e5e7eb; color:#111827; border-color:#d1d5db; }   /* gray  */
+.pill.status-open     { background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }   /* blue  */
+.pill.status-closed     { background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }   /* blue  */
+.pill.status-pending_payment     { background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }   /* blue  */
+.pill.status-Payment     { background:#080fe8; color:#1d4ed8; border-color:#86cd0d; }   /* blue  */
+
+/* ===== دارك مود للحالات (تباين مرتفع) ===== */
+@media (prefers-color-scheme: dark){
+  .pill.status-pending       { background:rgba(251,191,36,.22); color:#7fb0e8; border-color:rgba(251,191,36,.35); }
+  .pill.status-under_review  { background:rgba(59,130,246,.22); color:#93c5fd; border-color:rgba(59,130,246,.35); }
+  .pill.status-more_info     { background:rgba(245,158,11,.22); color:#fcd34d; border-color:rgba(245,158,11,.35); }
+  .pill.status-approved      { background:rgba(16,185,129,.22); color:#86efac; border-color:rgba(16,185,129,.35); }
+  .pill.status-issued        { background:rgba(14,165,233,.22); color:#93c5fd; border-color:rgba(14,165,233,.35); }
+  .pill.status-rejected      { background:rgba(244,63,94,.22);  color:#fecaca; border-color:rgba(244,63,94,.35); }
+  .pill.status-cancelled     { background:rgba(148,163,184,.18); color:#e5e7eb; border-color:rgba(148,163,184,.35); }
+  .pill.status-open     { background:rgba(59,130,246,.22); color:#93c5fd; border-color:rgba(59,130,246,.35); }
+  .pill.status-closed    { background:rgba(59,130,246,.22); color:#93c5fd; border-color:rgba(59,130,246,.35); }
+  .pill.status-Payment    { background:rgba(163, 205, 66, 0.22); color:#93c5fd; border-color:rgba(59,130,246,.35); }
+
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px){
+  .sb-modal, .ms-modal{ margin: 10px; border-radius: 12px; }
+  .sb-modal-body, .ms-modal > div:nth-child(2){ max-height: calc(92vh - 112px) !important; }
+}
+
+/* Support footer layout fixes */
+.sb-modal-footer .ms-input { flex: 1 1 auto; min-width: 0; }
+.sb-modal-footer input[type="file"] { flex: 0 0 auto; max-width: 220px; }

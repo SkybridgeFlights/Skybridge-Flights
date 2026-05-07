@@ -1,0 +1,71 @@
+.aboutus-page {
+  max-width: 900px;
+  margin: auto;
+  color: #1f2937;
+  padding: 40px 20px;
+}
+
+.aboutus-page h1 {
+  color: #1e3a8a;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.aboutus-page .lead {
+  color: #4b5563;
+  font-size: 20px;
+  margin-bottom: 40px;
+}
+
+/* الأقسام */
+.aboutus-page section {
+  background: #ffffff;
+  padding: 25px 30px;
+  border-radius: 14px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  text-align: left;
+}
+
+.aboutus-page h3 {
+  color: #1e3a8a;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.aboutus-page p {
+  color: #4b5563;
+  line-height: 1.7;
+}
+
+/* القائمة */
+.aboutus-page ul {
+  margin-top: 10px;
+  padding-left: 20px;
+}
+
+.aboutus-page li {
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+/* الموبايل */
+@media (max-width: 768px) {
+
+  .aboutus-page {
+    padding: 30px 15px;
+  }
+
+  .aboutus-page h1 {
+    font-size: 28px;
+  }
+
+  .aboutus-page .lead {
+    font-size: 17px;
+  }
+
+  .aboutus-page section {
+    padding: 20px;
+  }
+
+}

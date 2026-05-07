@@ -1,0 +1,112 @@
+/* ── Google Fonts ────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ══════════════════════════════════════════════════════════
+   DESIGN TOKENS  — single source of truth for all pages
+   ══════════════════════════════════════════════════════════ */
+:root {
+  /* Brand */
+  --c-primary:        #2f49d1;
+  --c-primary-dark:   #1e3bbd;
+  --c-primary-light:  #4f6ef7;
+  --c-primary-glow:   rgba(47, 73, 209, 0.18);
+  --c-primary-subtle: rgba(47, 73, 209, 0.07);
+  --c-accent:         #f59e0b;
+  --c-accent-dark:    #d97706;
+
+  /* Surfaces */
+  --c-bg:             #f8faff;
+  --c-surface:        #ffffff;
+  --c-surface-raised: #f1f5f9;
+
+  /* Text */
+  --c-text:           #0f172a;
+  --c-text-muted:     #64748b;
+  --c-text-subtle:    #94a3b8;
+
+  /* Borders */
+  --c-border:         #e2e8f0;
+  --c-border-strong:  #cbd5e1;
+
+  /* Shadows */
+  --shadow-xs:        0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-sm:        0 4px 14px rgba(15, 23, 42, 0.08);
+  --shadow-md:        0 8px 28px rgba(15, 23, 42, 0.10);
+  --shadow-lg:        0 20px 60px rgba(15, 23, 42, 0.14);
+  --shadow-blue:      0 8px 28px rgba(47, 73, 209, 0.28);
+
+  /* Radii */
+  --r-sm:   8px;
+  --r-md:   14px;
+  --r-lg:   20px;
+  --r-xl:   28px;
+  --r-pill: 999px;
+
+  /* Transitions */
+  --ease:   cubic-bezier(0.4, 0, 0.2, 1);
+  --t-fast: 0.15s;
+  --t-base: 0.22s;
+}
+
+/* ══════════════════════════════════════════════════════════
+   BASE RESET
+   ══════════════════════════════════════════════════════════ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--c-bg);
+  color: var(--c-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.55;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--c-primary-glow);
+  color: var(--c-primary-dark);
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar          { width: 6px; height: 6px; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    { background: var(--c-border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--c-text-subtle); }
+
+/* ── Schedule tables ─────────────────────────────────────── */
+.table th, .table td {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.table-responsive {
+  max-height: 450px;
+}

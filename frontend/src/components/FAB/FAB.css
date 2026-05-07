@@ -1,0 +1,79 @@
+/* ============ FAB container ============ */
+.fab-hub{
+  position: fixed;
+  right: 20px;              /* 👈 الجهة اليمنى */
+  bottom: 20px;             /* 👈 أسفل */
+  z-index: 99999;           /* فوق كل شيء */
+  pointer-events: none;     /* الحاوية نفسها لا تستقبل كليك */
+}
+
+/* ============ Main button ============ */
+.fab-main{
+  pointer-events: auto;     /* الزر نفسه قابل للكليك */
+  width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  background: #2563eb;      /* indigo-600 */
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.12);
+  transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+}
+.fab-main:hover{ transform: translateY(-2px); box-shadow: 0 16px 32px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.16); }
+.fab-main.active{ background:#1d4ed8; }
+
+/* ============ Secondary menu ============ */
+.fab-menu{
+  position: absolute;
+  right: 0;                 /* يخرج من يمين الزر */
+  bottom: 64px;             /* فوق الزر بـ 64px */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;     /* مخفي: لا كليك */
+  transition: opacity .18s ease, transform .18s ease;
+}
+.fab-menu.show{
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;     /* ظاهر: قابل للكليك */
+}
+
+/* ============ Secondary items ============ */
+.fab-item{
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  cursor: pointer;
+  background: #0f172a;      /* slate-900 */
+  color: #e2e8f0;           /* slate-200 */
+  box-shadow: 0 10px 18px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.12);
+  transition: transform .12s ease, box-shadow .18s ease, background .2s ease, color .2s ease;
+}
+.fab-item:hover{ transform: translateY(-2px); background:#111827; color:#fff; }
+
+/* يدعم الثيم الداكن تلقائياً */
+@media (prefers-color-scheme: dark){
+  .fab-main{ background:#1d4ed8; }
+  .fab-main.active{ background:#1e40af; }
+  .fab-item{ background:#111827; color:#e5e7eb; }
+  .fab-item:hover{ background:#0b1325; color:#fff; }
+}
+
+/* على الشاشات الصغيرة */
+@media (max-width: 480px){
+  .fab-main{ width: 54px; height: 54px; font-size: 20px; }
+  .fab-item{ width: 42px; height: 42px; font-size: 18px; }
+  .fab-menu{ bottom: 60px; gap: 8px; }
+}

@@ -1,0 +1,111 @@
+/* src/pages/ManageFlightsPage.css */
+
+.manage-flights-container {
+  padding: 30px;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9fbff;
+  min-height: 100vh;
+}
+
+.manage-flights-container h2 {
+  font-size: 28px;
+  color: #003366;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.add-flight-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.add-flight-form input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  background-color: #fff;
+}
+
+.add-flight-form button {
+  grid-column: span 2;
+  padding: 12px;
+  background-color: #0078d4;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-flight-form button:hover {
+  background-color: #005fa3;
+}
+
+.message {
+  grid-column: span 2;
+  color: green;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+h4 {
+  margin-bottom: 15px;
+  font-size: 22px;
+  color: #003366;
+}
+
+.flights-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 51, 102, 0.1);
+}
+
+.flights-table th {
+  background-color: #003366;
+  color: #fff;
+  padding: 12px;
+  text-align: center;
+}
+
+.flights-table td {
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.delete-btn {
+  background-color: #ff4d4f;
+  color: #fff;
+  padding: 7px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #cc0000;
+}
+
+@media (max-width: 768px) {
+  .add-flight-form {
+    grid-template-columns: 1fr;
+  }
+
+  .add-flight-form button {
+    grid-column: span 1;
+  }
+
+  .flights-table th, .flights-table td {
+    font-size: 13px;
+    padding: 8px;
+  }
+}

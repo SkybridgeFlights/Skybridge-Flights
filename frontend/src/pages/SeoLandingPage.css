@@ -1,0 +1,119 @@
+.seo-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 16px 52px;
+}
+
+.seo-hero {
+  padding: 34px 24px;
+  border: 1px solid #dbeafe;
+  border-radius: 18px;
+  background: #f8fafc;
+  margin-bottom: 24px;
+}
+
+.seo-hero span {
+  color: #0369a1;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.seo-hero h1 {
+  color: #0f172a;
+  font-size: 2.35rem;
+  line-height: 1.15;
+  margin: 8px 0 12px;
+}
+
+.seo-hero p,
+.seo-sections p,
+.seo-faq p,
+.seo-cta p {
+  color: #475569;
+  line-height: 1.8;
+}
+
+.seo-hero a,
+.seo-cta a {
+  display: inline-flex;
+  margin-top: 10px;
+  background: #0284c7;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-weight: 800;
+}
+
+.seo-sections {
+  display: grid;
+  gap: 16px;
+}
+
+.seo-sections article,
+.seo-faq,
+.seo-cta {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  background: #fff;
+}
+
+.seo-sections h2,
+.seo-faq h2 {
+  color: #0f172a;
+  margin: 0 0 10px;
+}
+
+.seo-faq {
+  margin-top: 20px;
+}
+
+.seo-faq details {
+  border-top: 1px solid #e2e8f0;
+  padding: 12px 0;
+}
+
+.seo-faq summary {
+  cursor: pointer;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.seo-cta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-top: 20px;
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.seo-cta strong {
+  color: #0f172a;
+}
+
+.seo-state {
+  text-align: center;
+  color: #475569;
+}
+
+.seo-state.error {
+  color: #b91c1c;
+}
+
+@media (max-width: 700px) {
+  .seo-hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .seo-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .seo-cta a {
+    justify-content: center;
+  }
+}
