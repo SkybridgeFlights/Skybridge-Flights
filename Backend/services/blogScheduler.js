@@ -59,7 +59,7 @@ function normalizeAutoPublisherError(error) {
   return wrapped;
 }
 
-async function runAutoPublisher({ manual = false } = {}) {
+async function runAutoPublisher({ manual = false, topic = null } = {}) {
   const settings = await BlogSettings.findOneAndUpdate(
     { singletonKey: 'ai-blog-settings' },
     {
@@ -91,7 +91,7 @@ async function runAutoPublisher({ manual = false } = {}) {
   if (generatedToday >= max) return { skipped: true, reason: 'Daily article limit reached' };
 
   try {
-    const research = await runTrendResearch(settings);
+    const research = topic ? { bestTopic: { topic, source: 'manual-override', score: 0 } } : await runTrendResearch(settings);
     if (!research.bestTopic) {
       const error = new Error('No valid travel trend topic found. Add travel-related seed keywords or enable fallback research.');
       error.code = 'NO_VALID_TREND_TOPIC';
@@ -102,6 +102,7 @@ async function runAutoPublisher({ manual = false } = {}) {
       topic: research.bestTopic.topic,
       languages,
       autoPublish: settings.autoPublishMode === 'publish-if-safe',
+      manualTopicOverride: !!topic,
     });
 
     settings.lastRunAt = new Date();

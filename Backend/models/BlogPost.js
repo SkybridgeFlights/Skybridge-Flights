@@ -151,7 +151,14 @@ const BlogPostSchema = new mongoose.Schema(
       matchedPost: { type: mongoose.Schema.Types.ObjectId, ref: 'BlogPost', default: null },
       method: { type: String, default: '' },
       passed: { type: Boolean, default: true },
+      publishPassed: { type: Boolean, default: true },
+      threshold: { type: Number, default: 0 },
+      publishThreshold: { type: Number, default: 0 },
       checkedAt: { type: Date, default: null },
+    },
+    publishConfidence: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
     },
     research: {
       source: { type: String, default: '' },

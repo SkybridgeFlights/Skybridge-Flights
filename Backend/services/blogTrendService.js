@@ -9,6 +9,12 @@ function topicKey(value = '') {
   return String(value).toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, '-').replace(/^-|-$/g, '');
 }
 
+function normalizeTopicFingerprint(value = '') {
+  return topicKey(value)
+    .replace(/-(guide|tips|travel|flight|flights|booking|route|routes|complete|practical|best|cheap)$/g, '')
+    .replace(/^(guide|tips|travel|flight|flights|booking|route|routes|complete|practical|best|cheap)-/g, '');
+}
+
 function inferCategory(topic = '') {
   const value = topic.toLowerCase();
   if (value.includes('baggage')) return 'baggage';
@@ -71,6 +77,72 @@ async function fetchProviderTopics(settings = {}) {
   return [...new Set(topics.filter(Boolean))];
 }
 
+async function getExistingTopicInventory({ language = null } = {}) {
+  const query = {
+    status: { $in: ['draft', 'scheduled', 'published'] },
+  };
+  if (language) query.language = language;
+
+  const posts = await BlogPost.find(query)
+    .select('title slug topicKey language status')
+    .limit(300)
+    .lean();
+
+  return {
+    titles: posts.map((post) => post.title).filter(Boolean),
+    slugs: posts.map((post) => post.slug).filter(Boolean),
+    topicKeys: posts.map((post) => post.topicKey || topicKey(post.title || post.slug)).filter(Boolean),
+    fingerprints: posts
+      .flatMap((post) => [post.topicKey, post.title, post.slug])
+      .filter(Boolean)
+      .map(normalizeTopicFingerprint),
+  };
+}
+
+function expandTopicCandidates(rawTopics = [], settings = {}) {
+  const angles = [
+    'budget route guide',
+    'family travel planning',
+    'business traveler tips',
+    'baggage and hidden fees',
+    'airport transfer advice',
+    'cheap flight booking guide',
+    'hotel and car rental planning',
+    'visa and travel readiness',
+    'solo traveler planning',
+    'common booking mistakes',
+  ];
+  const locations = ['Germany', 'Turkey', 'Dubai', 'Europe', 'Lebanon', 'Middle East', 'Berlin', 'Frankfurt', 'Istanbul'];
+  const seeds = rawTopics.length ? rawTopics : settings.trendSeedKeywords || [];
+  const candidates = [];
+
+  for (const seed of seeds.filter(Boolean)) {
+    candidates.push(seed);
+    for (const angle of angles.slice(0, 5)) candidates.push(`${seed} ${angle}`);
+    for (const location of locations.slice(0, 3)) {
+      if (!String(seed).toLowerCase().includes(location.toLowerCase())) candidates.push(`${seed} for ${location}`);
+    }
+  }
+
+  for (const location of locations) {
+    for (const angle of angles.slice(0, 4)) candidates.push(`${location} ${angle}`);
+  }
+
+  return [...new Set(candidates.map((item) => String(item).trim()).filter(Boolean))];
+}
+
+function isDuplicateTopicCandidate(topic, inventory = {}, excludeTopicKeys = []) {
+  const key = topicKey(topic);
+  const fingerprint = normalizeTopicFingerprint(topic);
+  const excluded = new Set(excludeTopicKeys.map(topicKey));
+  if (excluded.has(key) || excluded.has(fingerprint)) return true;
+  if ((inventory.topicKeys || []).some((item) => item === key)) return true;
+  if ((inventory.fingerprints || []).some((item) => item && item === fingerprint)) return true;
+  if ((inventory.titles || []).some((title) => normalizeTopicFingerprint(title) === fingerprint)) return true;
+  if ((inventory.slugs || []).some((slug) => normalizeTopicFingerprint(slug) === fingerprint)) return true;
+  return false;
+}
+
 async function scoreTopic(topic, settings = {}) {
   const key = topicKey(topic);
   const category = inferCategory(topic);
@@ -119,11 +191,21 @@ async function scoreTopic(topic, settings = {}) {
   };
 }
 
-async function runTrendResearch(settings = {}) {
+async function runTrendResearch(settings = {}, options = {}) {
   const rawTopics = await fetchProviderTopics(settings);
-  const filtered = rawTopics.filter((topic) => isAllowedTopic(topic, settings));
+  const inventory =
+    options.inventory ||
+    ((settings.allowDuplicateDrafts || options.allowDuplicateDrafts)
+      ? { titles: [], slugs: [], topicKeys: [], fingerprints: [] }
+      : await getExistingTopicInventory({ language: options.language || null }));
+  const expanded = expandTopicCandidates(rawTopics, settings);
+  const filtered = expanded.filter(
+    (topic) =>
+      isAllowedTopic(topic, settings) &&
+      !isDuplicateTopicCandidate(topic, inventory, options.excludeTopicKeys || [])
+  );
   const scored = await Promise.all(filtered.map((topic) => scoreTopic(topic, settings)));
-  const topics = scored.sort((a, b) => b.score - a.score).slice(0, 20);
+  const topics = scored.sort((a, b) => b.score - a.score).slice(0, options.limit || 20);
   return {
     generatedAt: new Date(),
     topics,
@@ -132,8 +214,12 @@ async function runTrendResearch(settings = {}) {
 }
 
 module.exports = {
+  expandTopicCandidates,
+  getExistingTopicInventory,
   inferCategory,
+  isDuplicateTopicCandidate,
   isAllowedTopic,
+  normalizeTopicFingerprint,
   runTrendResearch,
   scoreTopic,
   topicKey,

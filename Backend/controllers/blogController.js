@@ -11,7 +11,7 @@ const { runTrendResearch } = require('../services/blogTrendService');
 const { runAutoPublisher } = require('../services/blogScheduler');
 const { enqueueBlogJob, getRecentJobs } = require('../services/blogQueueService');
 const { getUsageSummary } = require('../services/blogUsageService');
-const { checkDuplicate } = require('../services/blogDuplicateService');
+const { checkDuplicate, evaluateDuplicateForValidation } = require('../services/blogDuplicateService');
 const { buildInternalLinks, insertInternalLinks } = require('../services/blogInternalLinkService');
 const { findWeakSeoPages, getSearchConsoleSummary, regenerateMeta, syncSearchConsole } = require('../services/searchConsoleService');
 const { createLandingPage, buildLandingPayload, scoreLandingPage } = require('../services/programmaticSeoService');
@@ -103,7 +103,7 @@ function pickFields(body = {}) {
   return payload;
 }
 
-async function applySeoAndGuardrails(doc) {
+async function applySeoAndGuardrails(doc, { validationPath = 'draft-validation' } = {}) {
   const settings = await BlogSettings.findOne({ singletonKey: 'ai-blog-settings' }).lean();
   if (!doc.internalLinks?.length) {
     doc.internalLinks = await buildInternalLinks(doc.toObject ? doc.toObject() : doc, settings || {});
@@ -116,20 +116,40 @@ async function applySeoAndGuardrails(doc) {
 
   const seo = enrichSeo(doc.toObject ? doc.toObject() : doc);
   const duplicateCheck = await checkDuplicate(doc.toObject ? doc.toObject() : doc, settings || {});
+  const duplicateValidation = evaluateDuplicateForValidation(duplicateCheck, settings || {}, validationPath);
   doc.readingTime = seo.readingTime;
   doc.canonicalUrl = seo.canonicalUrl;
   doc.schemaMarkup = seo.schemaMarkup;
   doc.seoScore = seo.seoScore;
   doc.qualityScore = seo.qualityScore;
   doc.duplicateCheck = duplicateCheck;
+  doc.publishConfidence = {
+    ...(doc.publishConfidence || {}),
+    duplicateScore: duplicateValidation.duplicateScore,
+    duplicateThreshold: duplicateValidation.thresholdUsed,
+    duplicateValidationPath: validationPath,
+    duplicateAllowed: duplicateValidation.publishAllowed,
+    seoScore: seo.seoScore,
+    qualityScore: seo.qualityScore,
+    passed:
+      seo.seoScore >= 85 &&
+      seo.qualityScore >= 80 &&
+      duplicateValidation.publishAllowed,
+  };
   const reasons = [...seo.guardrailReasons];
-  if (!duplicateCheck.passed) reasons.push(`Duplicate similarity too high (${duplicateCheck.maxSimilarity.toFixed(2)}).`);
+  if (!duplicateValidation.publishAllowed) {
+    reasons.push(
+      `Duplicate similarity too high (${duplicateValidation.duplicateScore.toFixed(2)}; threshold ${duplicateValidation.thresholdUsed.toFixed(2)} for ${validationPath}).`
+    );
+  }
   if (settings?.requireInternalLinks && !doc.internalLinks?.length) reasons.push('Internal links are required.');
   if (settings?.requireImageAlt && !doc.imageAltText) reasons.push('Image alt text is required.');
   if (settings?.requireFaq && !(doc.faq || []).length) reasons.push('FAQ is required.');
   if (settings?.requireCta && !doc.cta?.url) reasons.push('CTA is required.');
   if (settings?.requireNoBrokenInternalLinks && (doc.linkCheck?.brokenCount || 0) > 0) reasons.push('Broken internal links must be fixed.');
-  if (settings?.requireNoDuplicateSimilarityWarning && !duplicateCheck.passed) reasons.push('Duplicate similarity warning must be resolved.');
+  if (settings?.requireNoDuplicateSimilarityWarning && !duplicateValidation.publishAllowed) {
+    reasons.push(`Duplicate similarity warning must be resolved below ${duplicateValidation.thresholdUsed.toFixed(2)}.`);
+  }
   (doc.internalLinks || []).forEach((link) => {
     if (!/^\/|^https?:\/\//i.test(link.url || '')) reasons.push(`Broken internal link format: ${link.url}`);
   });
@@ -145,7 +165,7 @@ async function applySeoAndGuardrails(doc) {
   doc.guardrailStatus =
     seo.seoScore >= (settings?.minimumSeoScore || 70) &&
     seo.qualityScore >= (settings?.minimumQualityScore || 70) &&
-    duplicateCheck.passed &&
+    duplicateValidation.publishAllowed &&
     (!settings?.requireInternalLinks || doc.internalLinks?.length) &&
     (!settings?.requireImageAlt || doc.imageAltText) &&
     (!settings?.requireFaq || (doc.faq || []).length) &&
@@ -153,6 +173,18 @@ async function applySeoAndGuardrails(doc) {
     (!settings?.requireNoBrokenInternalLinks || !(doc.linkCheck?.brokenCount || 0))
       ? 'passed'
       : 'failed';
+
+  blogLog('publish.validation', {
+    postId: doc._id,
+    slug: doc.slug,
+    duplicateScore: duplicateValidation.duplicateScore,
+    thresholdUsed: duplicateValidation.thresholdUsed,
+    validationPath,
+    publishAllowed: duplicateValidation.publishAllowed,
+    guardrailStatus: doc.guardrailStatus,
+    seoScore: seo.seoScore,
+    qualityScore: seo.qualityScore,
+  }, duplicateValidation.publishAllowed ? 'info' : 'warn');
 
   if (doc.status === 'published' && doc.guardrailStatus !== 'passed') {
     doc.status = 'draft';
@@ -338,7 +370,9 @@ exports.createPost = async (req, res) => {
     if (exists) return res.status(409).json({ error: 'slug already exists for this language' });
 
     const post = new BlogPost(payload);
-    await applySeoAndGuardrails(post);
+    await applySeoAndGuardrails(post, {
+      validationPath: post.status === 'published' ? 'publish-validation' : 'draft-validation',
+    });
     if (post.status === 'published' && !post.publishedAt) post.publishedAt = new Date();
     await post.save();
     post.hreflang = await buildHreflang(post);
@@ -369,7 +403,9 @@ exports.updatePost = async (req, res) => {
 
     await createVersion('post', post, { changedBy: req.user?._id || null, action: 'update article' });
     Object.assign(post, payload);
-    await applySeoAndGuardrails(post);
+    await applySeoAndGuardrails(post, {
+      validationPath: post.status === 'published' ? 'publish-validation' : 'draft-validation',
+    });
 
     if (payload.status !== undefined) {
       if (post.status === 'published' && !post.publishedAt) post.publishedAt = new Date();
@@ -398,7 +434,7 @@ exports.publishPost = async (req, res) => {
   try {
     const post = await BlogPost.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Blog post not found' });
-    await applySeoAndGuardrails(post);
+    await applySeoAndGuardrails(post, { validationPath: 'publish-validation' });
     if (post.guardrailStatus !== 'passed') {
       await post.save();
       await createNotification({
@@ -477,6 +513,7 @@ exports.updateSettings = async (req, res) => {
       'requireCta',
       'requireNoBrokenInternalLinks',
       'requireNoDuplicateSimilarityWarning',
+      'allowDuplicateDrafts',
       'forbiddenTopics',
       'allowedTopicCategories',
       'trendProvider',
@@ -490,6 +527,8 @@ exports.updateSettings = async (req, res) => {
       'monthlyCostLimit',
       'fallbackResearchEnabled',
       'semanticSimilarityThreshold',
+      'publishSimilarityThreshold',
+      'topicRetryAttempts',
       'maxInternalLinksPerArticle',
       'requireInternalLinks',
       'autoApplyCtrOptimizations',
@@ -1078,13 +1117,14 @@ exports.runTrendResearchAdmin = async (req, res) => {
   }
 };
 
-exports.runAutoPublisherAdmin = async (_req, res) => {
+exports.runAutoPublisherAdmin = async (req, res) => {
   try {
     const today = new Date().toISOString().slice(0, 10);
+    const topic = String(req.body?.topic || '').trim();
     const result = await withSchedulerLock(
       `daily-ai-generation:${today}`,
-      () => runAutoPublisher({ manual: true }),
-      { ttlMs: 30 * 60 * 1000, metadata: { source: 'manual' } }
+      () => runAutoPublisher({ manual: true, topic: topic || null }),
+      { ttlMs: 30 * 60 * 1000, metadata: { source: 'manual', hasTopicOverride: !!topic } }
     );
     return res.json(result);
   } catch (error) {

@@ -26,6 +26,7 @@ const BlogSettingsSchema = new mongoose.Schema(
     requireCta: { type: Boolean, default: true },
     requireNoBrokenInternalLinks: { type: Boolean, default: true },
     requireNoDuplicateSimilarityWarning: { type: Boolean, default: true },
+    allowDuplicateDrafts: { type: Boolean, default: false },
     forbiddenTopics: { type: [String], default: [] },
     allowedTopicCategories: {
       type: [String],
@@ -66,7 +67,9 @@ const BlogSettingsSchema = new mongoose.Schema(
     dailyCostLimit: { type: Number, default: Number(process.env.AI_DAILY_BUDGET_LIMIT || 10), min: 0 },
     monthlyCostLimit: { type: Number, default: Number(process.env.AI_MONTHLY_BUDGET_LIMIT || 200), min: 0 },
     fallbackResearchEnabled: { type: Boolean, default: true },
-    semanticSimilarityThreshold: { type: Number, default: 0.82, min: 0, max: 1 },
+    semanticSimilarityThreshold: { type: Number, default: 0.9, min: 0, max: 1 },
+    publishSimilarityThreshold: { type: Number, default: 0.94, min: 0, max: 1 },
+    topicRetryAttempts: { type: Number, default: 5, min: 1, max: 10 },
     maxInternalLinksPerArticle: { type: Number, default: 5, min: 0, max: 20 },
     requireInternalLinks: { type: Boolean, default: true },
     autoApplyCtrOptimizations: { type: Boolean, default: false },

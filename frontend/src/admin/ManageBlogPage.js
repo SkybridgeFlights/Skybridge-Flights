@@ -503,7 +503,7 @@ function ManageBlogPage() {
         <div className="blog-list-card">
           <div className="blog-list-top">
             <h3>AI Dashboard</h3>
-            {isAdmin ? <button type="button" className="secondary-btn small" onClick={() => runAction('Auto publisher', () => axios.post(`${API_BASE_URL}/api/blog/admin/auto-publisher/run`, {}, { headers: authHeaders }))}>
+            {isAdmin ? <button type="button" className="secondary-btn small" onClick={() => runAction('Auto publisher', () => axios.post(`${API_BASE_URL}/api/blog/admin/auto-publisher/run`, { topic: aiTopic || undefined }, { headers: authHeaders }))}>
               Run Auto Publisher
             </button> : null}
           </div>
@@ -564,7 +564,9 @@ function ManageBlogPage() {
               <label><span>Monthly generation limit</span><input type="number" value={settings.monthlyGenerationLimit || 0} onChange={(e) => setSettings({ ...settings, monthlyGenerationLimit: Number(e.target.value) })} /></label>
               <label><span>Daily cost limit</span><input type="number" value={settings.dailyCostLimit || 0} onChange={(e) => setSettings({ ...settings, dailyCostLimit: Number(e.target.value) })} /></label>
               <label><span>Monthly cost limit</span><input type="number" value={settings.monthlyCostLimit || 0} onChange={(e) => setSettings({ ...settings, monthlyCostLimit: Number(e.target.value) })} /></label>
-              <label><span>Duplicate threshold</span><input type="number" step="0.01" value={settings.semanticSimilarityThreshold || 0.82} onChange={(e) => setSettings({ ...settings, semanticSimilarityThreshold: Number(e.target.value) })} /></label>
+              <label><span>Duplicate threshold</span><input type="number" step="0.01" value={settings.semanticSimilarityThreshold || 0.9} onChange={(e) => setSettings({ ...settings, semanticSimilarityThreshold: Number(e.target.value) })} /></label>
+              <label><span>Publish duplicate threshold</span><input type="number" step="0.01" value={settings.publishSimilarityThreshold || 0.94} onChange={(e) => setSettings({ ...settings, publishSimilarityThreshold: Number(e.target.value) })} /></label>
+              <label><span>Topic retry attempts</span><input type="number" min="1" max="10" value={settings.topicRetryAttempts || 5} onChange={(e) => setSettings({ ...settings, topicRetryAttempts: Number(e.target.value) })} /></label>
               <label><span>Max internal links</span><input type="number" value={settings.maxInternalLinksPerArticle || 5} onChange={(e) => setSettings({ ...settings, maxInternalLinksPerArticle: Number(e.target.value) })} /></label>
               <label><span>Fallback research</span><input type="checkbox" checked={settings.fallbackResearchEnabled !== false} onChange={(e) => setSettings({ ...settings, fallbackResearchEnabled: e.target.checked })} /></label>
               <label><span>Require internal links</span><input type="checkbox" checked={!!settings.requireInternalLinks} onChange={(e) => setSettings({ ...settings, requireInternalLinks: e.target.checked })} /></label>
@@ -574,6 +576,7 @@ function ManageBlogPage() {
               <label><span>Require CTA</span><input type="checkbox" checked={!!settings.requireCta} onChange={(e) => setSettings({ ...settings, requireCta: e.target.checked })} /></label>
               <label><span>No broken links</span><input type="checkbox" checked={!!settings.requireNoBrokenInternalLinks} onChange={(e) => setSettings({ ...settings, requireNoBrokenInternalLinks: e.target.checked })} /></label>
               <label><span>No duplicate warning</span><input type="checkbox" checked={!!settings.requireNoDuplicateSimilarityWarning} onChange={(e) => setSettings({ ...settings, requireNoDuplicateSimilarityWarning: e.target.checked })} /></label>
+              <label><span>Allow duplicate drafts</span><input type="checkbox" checked={!!settings.allowDuplicateDrafts} onChange={(e) => setSettings({ ...settings, allowDuplicateDrafts: e.target.checked })} /></label>
               <label><span>Auto-apply CTR SEO</span><input type="checkbox" checked={!!settings.autoApplyCtrOptimizations} onChange={(e) => setSettings({ ...settings, autoApplyCtrOptimizations: e.target.checked })} /></label>
               <label><span>Image provider</span><input value={settings.imageProvider || ''} onChange={(e) => setSettings({ ...settings, imageProvider: e.target.value })} /></label>
               <label><span>Refresh after days</span><input type="number" value={settings.contentRefreshAfterDays || 180} onChange={(e) => setSettings({ ...settings, contentRefreshAfterDays: Number(e.target.value) })} /></label>
