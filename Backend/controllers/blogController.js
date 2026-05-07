@@ -564,13 +564,28 @@ exports.fixSeoQaItem = async (req, res) => {
     const normalizedCode = String(code || '').trim();
 
     if (!normalizedType) {
-      return res.status(400).json({ error: 'targetType must be either post or seoPage.' });
+      return res.status(400).json({
+        success: false,
+        message: 'targetType must be either post or seoPage.',
+        issueType: normalizedCode || '',
+        recommendedAction: 'manual',
+      });
     }
     if (!targetId || !mongoose.Types.ObjectId.isValid(String(targetId))) {
-      return res.status(400).json({ error: 'A valid targetId is required to fix a QA item.' });
+      return res.status(400).json({
+        success: false,
+        message: 'A valid targetId is required to fix a QA item.',
+        issueType: normalizedCode || '',
+        recommendedAction: 'manual',
+      });
     }
     if (!normalizedCode) {
-      return res.status(400).json({ error: 'QA issue code is required.' });
+      return res.status(400).json({
+        success: false,
+        message: 'QA issue code is required.',
+        issueType: '',
+        recommendedAction: 'manual',
+      });
     }
 
     const unsupported = {
@@ -582,11 +597,17 @@ exports.fixSeoQaItem = async (req, res) => {
       meta_title_long: 'Long meta titles require editorial review.',
       meta_description_length: 'Meta description length requires editorial review.',
       too_many_internal_links: 'Too many internal links requires editorial review.',
-      low_quality_score: 'Low quality score requires content editing or AI regeneration; it cannot be safely auto-fixed.',
-      article_too_short: 'Short articles require content editing or AI regeneration; they cannot be safely auto-fixed.',
+      low_quality_score: 'Low quality score requires content regeneration as a draft or manual editing.',
+      article_too_short: 'Short articles require content regeneration as a draft or manual editing.',
     };
     if (unsupported[normalizedCode]) {
-      return res.status(400).json({ error: unsupported[normalizedCode], code: normalizedCode });
+      const recommendedAction = ['low_quality_score', 'article_too_short'].includes(normalizedCode) ? 'regenerate' : 'manual';
+      return res.status(400).json({
+        success: false,
+        message: unsupported[normalizedCode],
+        issueType: normalizedCode,
+        recommendedAction,
+      });
     }
 
     const supported = new Set([
@@ -602,7 +623,12 @@ exports.fixSeoQaItem = async (req, res) => {
       'no_headings',
     ]);
     if (!supported.has(normalizedCode)) {
-      return res.status(400).json({ error: `QA issue "${normalizedCode}" cannot be auto-fixed safely.`, code: normalizedCode });
+      return res.status(400).json({
+        success: false,
+        message: `QA issue "${normalizedCode}" cannot be auto-fixed safely.`,
+        issueType: normalizedCode,
+        recommendedAction: 'manual',
+      });
     }
 
     const Model = targetType === 'seoPage' ? BlogSeoLandingPage : BlogPost;
@@ -655,10 +681,23 @@ exports.fixSeoQaItem = async (req, res) => {
       doc.seoScore = scoreLandingPage(doc);
     }
     await doc.save();
-    return res.json({ ok: true, fixedCode: normalizedCode, item: doc });
+    return res.json({
+      success: true,
+      message: 'QA issue fixed safely.',
+      issueType: normalizedCode,
+      recommendedAction: 'fix',
+      item: doc,
+    });
   } catch (error) {
     console.error('fixSeoQaItem error:', sanitizeErrorMessage(error));
-    return res.status(500).json({ error: 'Failed to fix QA item', details: sanitizeErrorMessage(error) });
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fix QA item.',
+      error: 'Failed to fix QA item',
+      details: sanitizeErrorMessage(error),
+      issueType: req.body?.code || '',
+      recommendedAction: 'manual',
+    });
   }
 };
 
@@ -826,6 +865,10 @@ exports.createRefreshSuggestion = async (req, res) => {
   try {
     const post = await BlogPost.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Blog post not found' });
+    await createVersion('post', post, {
+      changedBy: req.user?._id || null,
+      action: 'create refresh suggestion',
+    });
     const suggestion = {
       reason: req.body?.reason || 'Manual refresh suggestion',
       suggestedMetaTitle: `${post.title}: Updated Travel Planning Guide`,
@@ -847,10 +890,24 @@ exports.createRefreshSuggestion = async (req, res) => {
       newMetaDescription: suggestion.suggestedMetaDescription,
       applied: false,
     });
+    post.status = 'draft';
+    post.publishedAt = null;
+    post.lastReviewedAt = new Date();
     await post.save();
-    return res.json(post);
+    return res.json({
+      success: true,
+      message: 'Refresh suggestion created. The article remains saved as draft for review.',
+      recommendedAction: 'regenerate',
+      item: post,
+    });
   } catch (error) {
-    return res.status(500).json({ error: 'Failed to create refresh suggestion' });
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to create refresh suggestion.',
+      error: 'Failed to create refresh suggestion',
+      details: sanitizeErrorMessage(error),
+      recommendedAction: 'manual',
+    });
   }
 };
 

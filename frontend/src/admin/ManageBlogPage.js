@@ -51,6 +51,9 @@ function textToFaq(value) {
 
 function getApiErrorMessage(err, fallback) {
   const data = err?.response?.data;
+  if (data?.message && data?.recommendedAction) {
+    return `${data.message} Recommended action: ${data.recommendedAction}.`;
+  }
   if (data?.error && Array.isArray(data?.reasons) && data.reasons.length) {
     return `${data.error} ${data.reasons.join(' ')}`;
   }
@@ -61,6 +64,29 @@ function getApiErrorMessage(err, fallback) {
   if (data?.message) return data.message;
   if (err?.message) return `${fallback} (${err.message})`;
   return fallback;
+}
+
+const AUTO_FIXABLE_QA = new Set([
+  'missing_canonical',
+  'missing_faq',
+  'missing_schema',
+  'missing_image_alt',
+  'missing_meta_title',
+  'missing_meta_description',
+  'weak_internal_linking',
+]);
+
+const REGENERATE_QA = new Set([
+  'low_quality_score',
+  'article_too_short',
+  'no_headings',
+  'low_seo_score',
+]);
+
+function qaActionFor(issue) {
+  if (AUTO_FIXABLE_QA.has(issue?.code)) return 'fix';
+  if (REGENERATE_QA.has(issue?.code) && issue?.targetType === 'post') return 'regenerate';
+  return 'manual';
 }
 
 function ManageBlogPage() {
@@ -258,7 +284,7 @@ function ManageBlogPage() {
       setSuccess(`${label} completed.`);
       fetchAll();
     } catch (err) {
-      console.error(`${label} failed:`, err);
+      console.error(`${label} failed:`, getApiErrorMessage(err, `${label} failed.`));
       setError(getApiErrorMessage(err, `${label} failed.`));
     } finally {
       setActionLoading('');
@@ -342,6 +368,24 @@ function ManageBlogPage() {
     if (!previewSeoPage) return;
     updateSeoPage(previewSeoPage, previewSeoPage, 'Save SEO page');
     setPreviewSeoPage(null);
+  };
+
+  const handleQaIssueAction = (issue) => {
+    const action = qaActionFor(issue);
+    if (action === 'fix') {
+      return runAction('Fix QA item', () => axios.post(`${API_BASE_URL}/api/blog/admin/seo-qa/fix`, issue, { headers: authHeaders }));
+    }
+    if (action === 'regenerate') {
+      return runAction('Regenerate draft suggestion', () =>
+        axios.post(
+          `${API_BASE_URL}/api/blog/admin/${issue.targetId}/refresh-suggestion`,
+          { reason: `SEO QA: ${issue.message || issue.code}` },
+          { headers: authHeaders }
+        )
+      );
+    }
+    setError(`Manual review required: ${issue.message || issue.code}`);
+    return null;
   };
 
   const formatDate = (value) => {
@@ -580,7 +624,13 @@ function ManageBlogPage() {
               <div key={`${issue.targetId}-${issue.code}-${index}`} className={`job-row ${issue.severity === 'error' ? 'failed' : ''}`}>
                 <strong>{issue.title}</strong>
                 <span>{issue.message}</span>
-                <button type="button" className="secondary-btn small" onClick={() => runAction('Fix QA item', () => axios.post(`${API_BASE_URL}/api/blog/admin/seo-qa/fix`, issue, { headers: authHeaders }))}>Fix</button>
+                {qaActionFor(issue) === 'manual' ? (
+                  <span className="muted">Manual Review</span>
+                ) : (
+                  <button type="button" className="secondary-btn small" onClick={() => handleQaIssueAction(issue)}>
+                    {qaActionFor(issue) === 'regenerate' ? 'Regenerate' : 'Fix'}
+                  </button>
+                )}
               </div>
             ))}
           </div>
