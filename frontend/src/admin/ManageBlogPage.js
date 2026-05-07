@@ -49,6 +49,20 @@ function textToFaq(value) {
     .filter((item) => item.question && item.answer);
 }
 
+function getApiErrorMessage(err, fallback) {
+  const data = err?.response?.data;
+  if (data?.error && Array.isArray(data?.reasons) && data.reasons.length) {
+    return `${data.error} ${data.reasons.join(' ')}`;
+  }
+  if (data?.error && data?.details && data.details !== data.error) {
+    return `${data.error}: ${data.details}`;
+  }
+  if (data?.error) return data.error;
+  if (data?.message) return data.message;
+  if (err?.message) return `${fallback} (${err.message})`;
+  return fallback;
+}
+
 function ManageBlogPage() {
   const [posts, setPosts] = useState([]);
   const [settings, setSettings] = useState(null);
@@ -152,7 +166,7 @@ function ManageBlogPage() {
       setSeoPages(Array.isArray(seoPagesRes.data) ? seoPagesRes.data : []);
     } catch (err) {
       console.error('Failed to fetch blog manager data:', err);
-      setError(err.response?.data?.error || 'Failed to load blog manager.');
+      setError(getApiErrorMessage(err, 'Failed to load blog manager.'));
     } finally {
       setLoading(false);
     }
@@ -229,7 +243,7 @@ function ManageBlogPage() {
       fetchAll();
     } catch (err) {
       console.error('Failed to save blog post:', err);
-      setError(err.response?.data?.error || 'Failed to save article.');
+      setError(getApiErrorMessage(err, 'Failed to save article.'));
     } finally {
       setSaving(false);
     }
@@ -245,7 +259,7 @@ function ManageBlogPage() {
       fetchAll();
     } catch (err) {
       console.error(`${label} failed:`, err);
-      setError(err.response?.data?.error || `${label} failed.`);
+      setError(getApiErrorMessage(err, `${label} failed.`));
     } finally {
       setActionLoading('');
     }

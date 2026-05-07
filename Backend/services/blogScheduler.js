@@ -50,14 +50,35 @@ async function publishScheduledPosts() {
   }
 }
 
-async function runAutoPublisher() {
+function normalizeAutoPublisherError(error) {
+  const message = String(error?.message || 'Auto publisher failed')
+    .replace(/sk-[A-Za-z0-9_-]+/g, '[redacted]')
+    .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, 'Bearer [redacted]');
+  const wrapped = new Error(message);
+  wrapped.code = error?.code || 'AUTO_PUBLISHER_FAILED';
+  return wrapped;
+}
+
+async function runAutoPublisher({ manual = false } = {}) {
   const settings = await BlogSettings.findOneAndUpdate(
     { singletonKey: 'ai-blog-settings' },
-    { $setOnInsert: { singletonKey: 'ai-blog-settings' } },
+    {
+      $setOnInsert: {
+        singletonKey: 'ai-blog-settings',
+        enabledLanguages: ['en', 'ar', 'de'],
+        autoPublishMode: 'draft-only',
+        articlesPerDay: 1,
+        maxArticlesPerDay: 1,
+      },
+    },
     { new: true, upsert: true }
   );
 
-  if (!settings.autoPublishEnabled) return { skipped: true, reason: 'Auto publishing disabled' };
+  if (!manual && !settings.autoPublishEnabled) return { skipped: true, reason: 'Auto publishing disabled' };
+
+  const languages = Array.isArray(settings.enabledLanguages) && settings.enabledLanguages.length
+    ? settings.enabledLanguages
+    : ['en', 'ar', 'de'];
 
   const today = nowInTimezone(settings.timezone).date;
   const start = new Date(`${today}T00:00:00.000Z`);
@@ -69,21 +90,40 @@ async function runAutoPublisher() {
   const max = Math.min(settings.articlesPerDay || 1, settings.maxArticlesPerDay || 1);
   if (generatedToday >= max) return { skipped: true, reason: 'Daily article limit reached' };
 
-  const research = await runTrendResearch(settings);
-  if (!research.bestTopic) throw new Error('No valid trend topic found');
+  try {
+    const research = await runTrendResearch(settings);
+    if (!research.bestTopic) {
+      const error = new Error('No valid travel trend topic found. Add travel-related seed keywords or enable fallback research.');
+      error.code = 'NO_VALID_TREND_TOPIC';
+      throw error;
+    }
 
-  const posts = await generateMultilingualArticle({
-    topic: research.bestTopic.topic,
-    languages: settings.enabledLanguages,
-    autoPublish: settings.autoPublish,
-  });
+    const posts = await generateMultilingualArticle({
+      topic: research.bestTopic.topic,
+      languages,
+      autoPublish: settings.autoPublishMode === 'publish-if-safe',
+    });
 
-  settings.lastRunAt = new Date();
-  settings.lastRunStatus = 'success';
-  settings.lastRunMessage = `Generated ${posts.length} article version(s) for ${research.bestTopic.topic}`;
-  await settings.save();
+    settings.lastRunAt = new Date();
+    settings.lastRunStatus = 'success';
+    settings.lastRunMessage = `Generated ${posts.length} article version(s) for ${research.bestTopic.topic}`;
+    await settings.save();
 
-  return { posts, trend: research.bestTopic };
+    return {
+      ok: true,
+      mode: manual ? 'manual' : 'scheduled',
+      autoPublishMode: settings.autoPublishMode || 'draft-only',
+      posts,
+      trend: research.bestTopic,
+    };
+  } catch (error) {
+    const safeError = normalizeAutoPublisherError(error);
+    settings.lastRunAt = new Date();
+    settings.lastRunStatus = 'error';
+    settings.lastRunMessage = safeError.message;
+    await settings.save().catch(() => {});
+    throw safeError;
+  }
 }
 
 async function tick() {

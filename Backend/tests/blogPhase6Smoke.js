@@ -1,5 +1,7 @@
 const assert = require('assert');
 const blogRoutes = require('../routes/blogRoutes');
+const blogController = require('../controllers/blogController');
+const { runAutoPublisher } = require('../services/blogScheduler');
 const { requirePerm, adminOnly } = require('../middleware/authMiddleware');
 const { buildAlertTemplate } = require('../services/blogAlertTemplateService');
 const { shouldDeliver } = require('../services/blogNotificationDeliveryService');
@@ -29,6 +31,8 @@ async function runMiddleware(middleware, req) {
 
 async function main() {
   assert(routeExists('/admin/tests/run', 'post'), 'production tests endpoint should be registered');
+  assert(routeExists('/admin/seo-qa/fix', 'post'), 'SEO QA fix endpoint should be registered');
+  assert(routeExists('/admin/auto-publisher/run', 'post'), 'manual auto publisher endpoint should be registered');
   assert(routeExists('/admin/settings', 'put'), 'settings endpoint should be registered');
   assert(routeExists('/admin/:id/publish', 'post'), 'publish endpoint should be registered');
   assert(routeExists('/:lang/:slug', 'get'), 'public multilingual blog detail should be registered');
@@ -70,6 +74,9 @@ async function main() {
     true,
     'critical budget alert should deliver'
   );
+  assert.strictEqual(typeof blogController.fixSeoQaItem, 'function', 'SEO QA fix controller should be exported');
+  assert.strictEqual(typeof blogController.runAutoPublisherAdmin, 'function', 'auto publisher controller should be exported');
+  assert.strictEqual(typeof runAutoPublisher, 'function', 'auto publisher service should be exported');
 
   console.log('Phase 6 blog smoke tests passed');
 }

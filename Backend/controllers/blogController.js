@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const mongoose = require('mongoose');
 const BlogPost = require('../models/BlogPost');
 const BlogSettings = require('../models/BlogSettings');
 const BlogVisitor = require('../models/BlogVisitor');
@@ -24,6 +25,13 @@ const { blogLog } = require('../services/blogLoggerService');
 const { withSchedulerLock } = require('../services/blogSchedulerLockService');
 
 const SITE_URL = (process.env.SITE_URL || 'https://skybridgeflights.com').replace(/\/$/, '');
+
+function sanitizeErrorMessage(error) {
+  return String(error?.message || 'Unexpected error')
+    .replace(/sk-[A-Za-z0-9_-]+/g, '[redacted]')
+    .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, 'Bearer [redacted]')
+    .replace(/mongodb(\+srv)?:\/\/[^\s'"]+/gi, 'mongodb://[redacted]');
+}
 
 function normalizeList(value) {
   if (Array.isArray(value)) return value.map((item) => String(item || '').trim()).filter(Boolean);
@@ -552,25 +560,105 @@ exports.getSeoQa = async (req, res) => {
 exports.fixSeoQaItem = async (req, res) => {
   try {
     const { targetType, targetId, code } = req.body || {};
+    const normalizedType = targetType === 'seoPage' ? 'seoPage' : targetType === 'post' ? 'post' : '';
+    const normalizedCode = String(code || '').trim();
+
+    if (!normalizedType) {
+      return res.status(400).json({ error: 'targetType must be either post or seoPage.' });
+    }
+    if (!targetId || !mongoose.Types.ObjectId.isValid(String(targetId))) {
+      return res.status(400).json({ error: 'A valid targetId is required to fix a QA item.' });
+    }
+    if (!normalizedCode) {
+      return res.status(400).json({ error: 'QA issue code is required.' });
+    }
+
+    const unsupported = {
+      duplicate_slug: 'Duplicate slugs must be fixed manually by editing one of the slugs.',
+      invalid_hreflang: 'Invalid hreflang data must be reviewed manually to avoid incorrect language URLs.',
+      broken_internal_links: 'Broken links must be fixed with the broken-link report so valid targets can be chosen.',
+      non_webp_image: 'Image conversion cannot be safely applied automatically from QA.',
+      image_dimensions_missing: 'Image dimensions require checking the real image asset.',
+      meta_title_long: 'Long meta titles require editorial review.',
+      meta_description_length: 'Meta description length requires editorial review.',
+      too_many_internal_links: 'Too many internal links requires editorial review.',
+      low_quality_score: 'Low quality score requires content editing or AI regeneration; it cannot be safely auto-fixed.',
+      article_too_short: 'Short articles require content editing or AI regeneration; they cannot be safely auto-fixed.',
+    };
+    if (unsupported[normalizedCode]) {
+      return res.status(400).json({ error: unsupported[normalizedCode], code: normalizedCode });
+    }
+
+    const supported = new Set([
+      'missing_meta_title',
+      'missing_meta_description',
+      'missing_canonical',
+      'missing_faq',
+      'missing_schema',
+      'missing_image_alt',
+      'missing_cta',
+      'weak_internal_linking',
+      'low_seo_score',
+      'no_headings',
+    ]);
+    if (!supported.has(normalizedCode)) {
+      return res.status(400).json({ error: `QA issue "${normalizedCode}" cannot be auto-fixed safely.`, code: normalizedCode });
+    }
+
     const Model = targetType === 'seoPage' ? BlogSeoLandingPage : BlogPost;
     const doc = await Model.findById(targetId);
     if (!doc) return res.status(404).json({ error: 'Target not found' });
-    await createVersion(targetType === 'seoPage' ? 'seoPage' : 'post', doc, {
+    await createVersion(normalizedType, doc, {
       changedBy: req.user?._id || null,
-      action: `fix ${code}`,
+      action: `fix ${normalizedCode}`,
     });
-    if (code === 'missing_meta_title') doc.metaTitle = doc.metaTitle || doc.seoTitle || `${doc.title} | Skybridge Flights`;
-    if (code === 'missing_meta_description') doc.metaDescription = doc.metaDescription || doc.seoDescription || `Plan ${doc.title} with Skybridge Flights.`;
-    if (code === 'missing_canonical') doc.canonicalUrl = targetType === 'seoPage' ? `${SITE_URL}${doc.path}` : urlForPost(doc);
-    if (code === 'missing_image_alt') doc.imageAltText = doc.imageAltText || `${doc.title} travel image`;
-    if (code === 'missing_faq') doc.faq = doc.faq?.length ? doc.faq : [{ question: `How do I plan ${doc.title}?`, answer: 'Compare routes, verify travel details, and use Skybridge Flights when ready to book.' }];
-    if (code === 'missing_cta') doc.cta = { label: 'Search flights with Skybridge Flights', url: '/flights', type: 'search' };
-    if (targetType === 'post') await applySeoAndGuardrails(doc);
-    if (targetType === 'seoPage') doc.seoScore = scoreLandingPage(doc);
+    if (normalizedCode === 'missing_meta_title') doc.metaTitle = doc.metaTitle || doc.seoTitle || `${doc.title} | Skybridge Flights`;
+    if (normalizedCode === 'missing_meta_description') doc.metaDescription = doc.metaDescription || doc.seoDescription || `Plan ${doc.title} with Skybridge Flights.`;
+    if (normalizedCode === 'missing_canonical') doc.canonicalUrl = normalizedType === 'seoPage' ? `${SITE_URL}${doc.path || `/seo/${doc.slug}`}` : urlForPost(doc);
+    if (normalizedCode === 'missing_image_alt') {
+      if (normalizedType === 'seoPage') doc.image = { ...(doc.image || {}), alt: doc.image?.alt || `${doc.title} travel image` };
+      else doc.imageAltText = doc.imageAltText || `${doc.title} travel image`;
+    }
+    if (normalizedCode === 'missing_faq') {
+      doc.faq = doc.faq?.length ? doc.faq : [{ question: `How do I plan ${doc.title}?`, answer: 'Compare routes, verify travel details, and use Skybridge Flights when ready to book.' }];
+    }
+    if (normalizedCode === 'missing_cta') doc.cta = { label: 'Search flights with Skybridge Flights', url: '/flights', type: 'search' };
+    if (normalizedCode === 'weak_internal_linking' && normalizedType === 'post') {
+      doc.internalLinks = await buildInternalLinks(doc.toObject ? doc.toObject() : doc, {});
+      if (doc.content && doc.internalLinks?.length) {
+        const inserted = insertInternalLinks(doc.content, doc.internalLinks, {});
+        doc.content = inserted.content;
+        doc.insertedLinksReport = inserted.report;
+      }
+    }
+    if (normalizedCode === 'no_headings' && normalizedType === 'post') {
+      if (!/^#|<h[1-3]/im.test(doc.content || '')) doc.content = `# ${doc.title}\n\n${doc.content || ''}`;
+    }
+    if (normalizedCode === 'missing_schema' && normalizedType === 'seoPage') {
+      doc.schemaMarkup = {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: doc.title,
+        description: doc.metaDescription || `Plan ${doc.title} with Skybridge Flights.`,
+        url: doc.canonicalUrl || `${SITE_URL}${doc.path || `/seo/${doc.slug}`}`,
+      };
+    }
+    if (normalizedType === 'post') await applySeoAndGuardrails(doc);
+    if (normalizedType === 'seoPage') {
+      if (normalizedCode === 'low_seo_score') {
+        doc.metaTitle = doc.metaTitle || `${doc.title} | Skybridge Flights`;
+        doc.metaDescription = doc.metaDescription || `Plan ${doc.title} with Skybridge Flights. Compare routes, services, and travel options before booking.`;
+        doc.canonicalUrl = doc.canonicalUrl || `${SITE_URL}${doc.path || `/seo/${doc.slug}`}`;
+        doc.faq = doc.faq?.length ? doc.faq : [{ question: `How do I plan ${doc.title}?`, answer: 'Compare route options, confirm travel requirements, and continue with Skybridge Flights services when ready.' }];
+        doc.cta = doc.cta?.url ? doc.cta : { label: 'Search flights with Skybridge Flights', url: '/flights', type: 'search' };
+      }
+      doc.seoScore = scoreLandingPage(doc);
+    }
     await doc.save();
-    return res.json(doc);
+    return res.json({ ok: true, fixedCode: normalizedCode, item: doc });
   } catch (error) {
-    return res.status(500).json({ error: 'Failed to fix QA item' });
+    console.error('fixSeoQaItem error:', sanitizeErrorMessage(error));
+    return res.status(500).json({ error: 'Failed to fix QA item', details: sanitizeErrorMessage(error) });
   }
 };
 
@@ -938,12 +1026,18 @@ exports.runAutoPublisherAdmin = async (_req, res) => {
     const today = new Date().toISOString().slice(0, 10);
     const result = await withSchedulerLock(
       `daily-ai-generation:${today}`,
-      () => runAutoPublisher(),
+      () => runAutoPublisher({ manual: true }),
       { ttlMs: 30 * 60 * 1000, metadata: { source: 'manual' } }
     );
     return res.json(result);
   } catch (error) {
-    return res.status(400).json({ error: error.message || 'Failed to run auto publisher' });
+    const message = sanitizeErrorMessage(error);
+    const status = error.code === 'AI_BUDGET_EXCEEDED' ? 402 : 400;
+    return res.status(status).json({
+      error: message || 'Failed to run auto publisher',
+      code: error.code || 'AUTO_PUBLISHER_FAILED',
+      details: message,
+    });
   }
 };
 
