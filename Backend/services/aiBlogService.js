@@ -75,8 +75,6 @@ function fallbackArticle(topic, language = 'en') {
     .map((section) => `## ${section.heading}\n${section.body}`)
     .join('\n\n')}\n\n## Practical checklist\n- Compare at least two airport options when possible.\n- Review baggage and fare rules before payment.\n- Keep visa, passport, hotel, and transfer information together.\n- Choose realistic connection times for families, pets, and checked baggage.\n- Continue to Skybridge Flights when you are ready to compare travel options.`;
 
-  const canPublish = passes && settings.autoPublishMode === 'publish-if-safe';
-
   return {
     title: titleMap[language] || titleMap.en,
     excerpt: introMap[language] || introMap.en,
@@ -237,6 +235,7 @@ async function buildPostPayload({ topic, language = 'en', settings, trend }) {
     payload.cta.label &&
     payload.content &&
     payload.content.length > 2500;
+  const canPublish = passes && settings.autoPublishMode === 'publish-if-safe';
 
   return {
     ...payload,
