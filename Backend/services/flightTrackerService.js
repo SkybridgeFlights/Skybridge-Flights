@@ -372,7 +372,7 @@ async function getOpenSkyToken() {
   body.set('client_secret', clientSecret);
 
   const { data } = await axios.post(OPEN_SKY_TOKEN_URL, body.toString(), {
-    timeout: 8000,
+    timeout: Number(process.env.OPENSKY_TIMEOUT_MS || 25000);
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   });
 
@@ -426,7 +426,7 @@ async function fetchOpenSkyStates(params = {}, { forceAnonymous = false } = {}) 
   }
 
   const response = await axios.get(`${OPEN_SKY_BASE}/states/all?${query.toString()}`, {
-    timeout: 10_000,
+    timeout: Number(process.env.OPENSKY_TIMEOUT_MS || 25000),
     headers,
   });
 

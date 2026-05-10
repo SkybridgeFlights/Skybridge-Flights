@@ -3,7 +3,9 @@ const { getAirportByCode } = require('./flightTrackerData');
 const analytics = require('./flightTrackerAnalytics');
 const aeroDataBox = require('./aeroDataBoxService');
 
-const DEFAULT_TIMEOUT_MS = 10_000;
+const DEFAULT_TIMEOUT_MS = Number(
+  process.env.OPENSKY_TIMEOUT_MS || 25000
+);
 const CACHE_TTL_MS = Number(process.env.FLIGHT_TRACKER_COMMERCIAL_CACHE_MS || 5 * 60_000);
 const STALE_CACHE_TTL_MS = Number(process.env.FLIGHT_TRACKER_COMMERCIAL_STALE_CACHE_MS || 30 * 60_000);
 const COOLDOWN_MS = Number(process.env.FLIGHT_TRACKER_COMMERCIAL_COOLDOWN_MS || 2500);
