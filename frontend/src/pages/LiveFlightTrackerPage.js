@@ -33,7 +33,7 @@ const AIRPORT_OPTIONS = [
   { code: 'BEY', name: 'Beirut Rafic Hariri International Airport', city: 'Beirut', country: 'Lebanon' },
   { code: 'LHR', name: 'London Heathrow Airport', city: 'London', country: 'United Kingdom' },
 ];
-const LIMIT = 2500;
+const LIMIT = 300;
 const POLL_MS = 60_000;
 const HEALTH_POLL_MS = 5 * 60_000;
 const ALERT_TYPE_OPTIONS = [
