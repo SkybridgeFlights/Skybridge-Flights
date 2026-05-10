@@ -35,6 +35,28 @@
   margin-inline: auto;
 }
 
+.blog-tracker-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 6px;
+}
+
+.blog-tracker-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid #d7e3f6;
+  background: rgba(255, 255, 255, 0.94);
+  color: #133b6d;
+  text-decoration: none;
+  font-weight: 700;
+}
+
 .blog-language-switch {
   display: flex;
   justify-content: center;

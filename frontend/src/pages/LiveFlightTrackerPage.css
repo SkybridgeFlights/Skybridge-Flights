@@ -1,0 +1,2023 @@
+/* ============================================================
+   LIVE FLIGHT TRACKER — Flightradar24-style aviation experience
+   ============================================================ */
+
+/* ── Reset ── */
+.ftp-page,
+.ftp-page * {
+  box-sizing: border-box;
+}
+
+/* ── Fullscreen container ── */
+.ftp-page {
+  --ftp-topbar-height: 52px;
+  position: relative;
+  isolation: isolate;
+  z-index: 1002;
+  background: #080d14;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  color: #e2eaf4;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+.ftp-topbar {
+  flex-shrink: 0;
+  height: var(--ftp-topbar-height);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px;
+  background: rgba(7, 12, 22, 0.95);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 20;
+  position: sticky;
+  top: 0;
+}
+
+.ftp-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #e2eaf4;
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border-radius: 10px;
+  transition: background 0.18s ease;
+}
+
+.ftp-brand:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.ftp-brand-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0ea5e9, #22c55e);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ftp-brand-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: #fff;
+}
+
+.ftp-brand-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #f0f8ff;
+  line-height: 1.1;
+}
+
+.ftp-brand-sub {
+  font-size: 0.68rem;
+  color: #64748b;
+  display: block;
+}
+
+.ftp-topbar-sep {
+  width: 1px;
+  height: 22px;
+  background: rgba(56, 189, 248, 0.14);
+  flex-shrink: 0;
+}
+
+.ftp-topbar-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ftp-topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Live pill */
+.ftp-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.1);
+  color: #4ade80;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.ftp-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5);
+  animation: ftp-dot-pulse 1.8s infinite;
+  flex-shrink: 0;
+}
+
+/* Stat pills in topbar */
+.ftp-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Panel toggle button */
+.ftp-panel-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(56, 189, 248, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: #7dd3fc;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+  flex-shrink: 0;
+}
+
+.ftp-panel-toggle:hover,
+.ftp-panel-toggle.is-active {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+}
+
+.ftp-panel-toggle svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+}
+
+/* ============================================================
+   MAP WORKSPACE
+   ============================================================ */
+.ftp-workspace {
+  position: relative;
+  flex: 0 0 auto;
+  min-height: calc(100vh - var(--ftp-topbar-height));
+  min-height: calc(100svh - var(--ftp-topbar-height));
+  overflow: hidden;
+  background: #07101a;
+}
+
+/* Map fills everything */
+.ftp-map-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.ftp-map-stage .tracker-leaflet-map,
+.ftp-map-stage .tracker-map-fallback,
+.ftp-map-stage .leaflet-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================================
+   FLOATING SEARCH BAR
+   ============================================================ */
+.ftp-search-float {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(640px, calc(100% - 80px));
+  z-index: 12;
+}
+
+.ftp-search-form {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 18px;
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  background: rgba(7, 12, 22, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(56, 189, 248, 0.06);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ftp-search-form:focus-within {
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 3px rgba(56, 189, 248, 0.08);
+}
+
+.ftp-search-input-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ftp-search-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #64748b;
+  stroke: currentColor;
+  fill: none;
+  pointer-events: none;
+  margin-left: 4px;
+}
+
+.ftp-search-input {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: #e2eaf4;
+  font-size: 0.92rem;
+  font-family: inherit;
+  caret-color: #38bdf8;
+}
+
+.ftp-search-input::placeholder {
+  color: #475569;
+}
+
+.ftp-search-clear {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.08);
+  color: #64748b;
+  font-size: 14px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.ftp-search-clear:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #94a3b8;
+}
+
+.ftp-search-submit {
+  flex-shrink: 0;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 0;
+  background: linear-gradient(135deg, #0ea5e9, #22c55e);
+  color: #04101b;
+  font-weight: 700;
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  white-space: nowrap;
+}
+
+.ftp-search-submit:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.ftp-search-submit:disabled {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+}
+
+/* ── Search suggestions dropdown ── */
+.ftp-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 13;
+  border-radius: 16px;
+  border: 1px solid rgba(56, 189, 248, 0.16);
+  background: rgba(7, 12, 22, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  animation: ftp-slide-down 0.18s ease;
+}
+
+.ftp-suggestion-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: #e2eaf4;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s ease;
+}
+
+.ftp-suggestion-item:hover,
+.ftp-suggestion-item.is-focused {
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.ftp-suggestion-item + .ftp-suggestion-item {
+  border-top: 1px solid rgba(56, 189, 248, 0.06);
+}
+
+.ftp-sug-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.14);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.ftp-sug-icon--airport { background: rgba(14, 165, 233, 0.12); border-color: rgba(14, 165, 233, 0.2); }
+.ftp-sug-icon--recent  { background: rgba(148, 163, 184, 0.08); border-color: rgba(148, 163, 184, 0.14); }
+
+.ftp-sug-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ftp-sug-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #e2eaf4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ftp-sug-hint {
+  font-size: 0.74rem;
+  color: #64748b;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ftp-sug-tag {
+  font-size: 0.7rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  color: #7dd3fc;
+  font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.ftp-sug-tag--airport { background: rgba(14, 165, 233, 0.12); border-color: rgba(14, 165, 233, 0.22); color: #38bdf8; }
+.ftp-sug-tag--recent  { background: rgba(148, 163, 184, 0.08); border-color: rgba(148, 163, 184, 0.18); color: #94a3b8; }
+
+.ftp-sug-empty {
+  padding: 14px;
+  color: #64748b;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* ============================================================
+   FILTER PANEL (left side, floating)
+   ============================================================ */
+.ftp-filter-panel {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  bottom: 56px;
+  width: 280px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  border: 1px solid rgba(56, 189, 248, 0.13);
+  background: rgba(7, 12, 22, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  transform: translateX(calc(-280px - 20px));
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.ftp-filter-panel.is-open {
+  transform: translateX(0);
+}
+
+.ftp-filter-panel-inner {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  display: grid;
+  gap: 18px;
+  align-content: start;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56, 189, 248, 0.2) transparent;
+}
+
+.ftp-filter-panel-inner::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ftp-filter-panel-inner::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ftp-filter-panel-inner::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.2);
+  border-radius: 999px;
+}
+
+.ftp-filter-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 2px;
+}
+
+.ftp-filter-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #7dd3fc;
+}
+
+.ftp-reset-btn {
+  font-size: 0.74rem;
+  color: #64748b;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.ftp-reset-btn:hover {
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Stats summary */
+.ftp-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.ftp-stat-card {
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 10px;
+  display: grid;
+  gap: 2px;
+}
+
+.ftp-stat-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #f0f8ff;
+  line-height: 1;
+}
+
+.ftp-stat-label {
+  font-size: 0.7rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Filter blocks */
+.ftp-filter-block {
+  display: grid;
+  gap: 10px;
+}
+
+.ftp-filter-block-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #475569;
+  font-weight: 600;
+}
+
+.ftp-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.ftp-chip {
+  min-height: 31px;
+  padding: 0 10px;
+  border-radius: 9px;
+  border: 1px solid rgba(56, 189, 248, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: #94a3b8;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.ftp-chip:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+  background: rgba(56, 189, 248, 0.08);
+  color: #7dd3fc;
+}
+
+.ftp-chip.is-active {
+  background: linear-gradient(135deg, #22c55e 0%, #0ea5e9 100%);
+  border-color: transparent;
+  color: #04101b;
+}
+
+/* Range inputs */
+.ftp-range-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.ftp-range-field {
+  display: grid;
+  gap: 4px;
+}
+
+.ftp-range-label {
+  font-size: 0.68rem;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ftp-range-input {
+  width: 100%;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(56, 189, 248, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2eaf4;
+  font-size: 0.82rem;
+  padding: 0 10px;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+}
+
+.ftp-range-input:focus {
+  outline: 0;
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+.ftp-range-input::-webkit-inner-spin-button,
+.ftp-range-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+/* Recent searches */
+.ftp-recent-list {
+  display: grid;
+  gap: 5px;
+}
+
+.ftp-recent-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.04);
+  color: #94a3b8;
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.14s ease, color 0.14s ease;
+  border: 1px solid transparent;
+}
+
+.ftp-recent-item:hover {
+  background: rgba(56, 189, 248, 0.07);
+  border-color: rgba(56, 189, 248, 0.12);
+  color: #cbd5e1;
+}
+
+.ftp-recent-icon {
+  font-size: 11px;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+/* Link list */
+.ftp-link-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ftp-link-list a {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.76rem;
+  font-weight: 600;
+  transition: color 0.14s ease, border-color 0.14s ease;
+}
+
+.ftp-link-list a:hover {
+  color: #7dd3fc;
+  border-color: rgba(56, 189, 248, 0.28);
+}
+
+.ftp-muted {
+  font-size: 0.78rem;
+  color: #475569;
+}
+
+/* ============================================================
+   DETAIL PANEL (right side, floating)
+   ============================================================ */
+.ftp-detail-panel {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  bottom: 56px;
+  width: 360px;
+  z-index: 10;
+  border-radius: 20px;
+  border: 1px solid rgba(56, 189, 248, 0.13);
+  background: rgba(7, 12, 22, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  transform: translateX(calc(360px + 20px));
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ftp-detail-panel.is-active {
+  transform: translateX(0);
+}
+
+.ftp-detail-inner {
+  flex: 1;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56, 189, 248, 0.2) transparent;
+}
+
+.ftp-detail-inner::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ftp-detail-inner::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.2);
+  border-radius: 999px;
+}
+
+/* ── Flight header ── */
+.ftp-flight-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 14px 0;
+}
+
+.ftp-airline-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid rgba(56, 189, 248, 0.16);
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(34, 197, 94, 0.2));
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 0.8rem;
+  color: #e2eaf4;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
+
+.ftp-flight-ident {
+  flex: 1;
+  min-width: 0;
+}
+
+.ftp-flight-number {
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: #f0f8ff;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ftp-airline-name {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ftp-flight-status-row {
+  margin-top: 5px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ftp-status-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ftp-status-badge--cruising,
+.ftp-status-badge--airborne {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.24);
+  color: #38bdf8;
+}
+
+.ftp-status-badge--climbing {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.24);
+  color: #22c55e;
+}
+
+.ftp-status-badge--descending {
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.24);
+  color: #fbbf24;
+}
+
+.ftp-status-badge--landed,
+.ftp-status-badge--ground {
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+}
+
+.ftp-status-badge--ontime {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.22);
+  color: #4ade80;
+}
+
+.ftp-status-badge--delayed {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.22);
+  color: #f87171;
+}
+
+.ftp-detail-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #64748b;
+  font-size: 16px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+  line-height: 1;
+}
+
+.ftp-detail-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+/* ── Route card ── */
+.ftp-route-card {
+  margin: 14px 14px 0;
+  padding: 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(56, 189, 248, 0.11);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ftp-route-airports {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.ftp-airport-code {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #f0f8ff;
+  letter-spacing: 0.06em;
+}
+
+.ftp-airport-name {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ftp-airport-time {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.ftp-airport--right {
+  text-align: right;
+}
+
+.ftp-route-arrow-col {
+  display: grid;
+  gap: 4px;
+  align-items: center;
+  text-align: center;
+  padding: 0 4px;
+}
+
+.ftp-route-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+.ftp-route-track-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #22c55e, #0ea5e9);
+  transition: width 0.6s ease;
+}
+
+.ftp-route-dist {
+  font-size: 0.68rem;
+  color: #475569;
+  text-align: center;
+}
+
+.ftp-route-footer {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ftp-smart-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 14px 0;
+}
+
+.ftp-smart-actions a,
+.ftp-smart-actions button {
+  min-height: 34px;
+  border-radius: 9px;
+  border: 1px solid rgba(56, 189, 248, 0.14);
+  background: rgba(255, 255, 255, 0.045);
+  color: #bae6fd;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 9px;
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-align: center;
+}
+
+.ftp-smart-actions a:hover,
+.ftp-smart-actions button:hover {
+  border-color: rgba(56, 189, 248, 0.28);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.ftp-insight-card {
+  margin: 12px 14px 0;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.1);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.ftp-insight-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.ftp-insight-grid div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.ftp-insight-grid span {
+  color: #64748b;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+}
+
+.ftp-insight-grid strong {
+  color: #dbeafe;
+  font-size: 0.82rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ftp-eta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.ftp-remaining {
+  font-size: 0.74rem;
+  color: #64748b;
+}
+
+/* ── Detail sections ── */
+.ftp-detail-section {
+  margin: 14px 14px 0;
+}
+
+.ftp-section-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #475569;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* Telemetry 2×2 grid */
+.ftp-telem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.ftp-telem-card {
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 10px 12px;
+}
+
+.ftp-telem-value {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #f0f8ff;
+  line-height: 1.1;
+}
+
+.ftp-telem-label {
+  font-size: 0.68rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 3px;
+}
+
+/* Info rows (key-value) */
+.ftp-info-rows {
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid rgba(56, 189, 248, 0.09);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.ftp-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.06);
+}
+
+.ftp-info-row:last-child {
+  border-bottom: 0;
+}
+
+.ftp-info-label {
+  font-size: 0.7rem;
+  color: #64748b;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.ftp-info-value {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #dbeafe;
+  text-align: right;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Availability chips */
+.ftp-avail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ftp-avail-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 25px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ftp-avail-chip--ok {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.ftp-avail-chip--off {
+  display: none;
+}
+
+.ftp-provider-grid {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.09);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.ftp-provider-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #64748b;
+  font-size: 0.74rem;
+}
+
+.ftp-provider-row strong {
+  color: #cbd5e1;
+  font-weight: 800;
+}
+
+.ftp-alert-subscribe {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ftp-alert-title {
+  color: #e2e8f0;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.ftp-alert-input {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 11px;
+  border-radius: 9px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(2, 6, 23, 0.52);
+  color: #f8fafc;
+  font-size: 0.86rem;
+  outline: none;
+}
+
+.ftp-alert-input:focus {
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+.ftp-alert-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px 10px;
+}
+
+.ftp-alert-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: #94a3b8;
+  font-size: 0.73rem;
+  line-height: 1.2;
+}
+
+.ftp-alert-check input {
+  width: 14px;
+  height: 14px;
+  accent-color: #38bdf8;
+  flex-shrink: 0;
+}
+
+.ftp-alert-button {
+  min-height: 38px;
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  border-radius: 9px;
+  background: rgba(14, 165, 233, 0.18);
+  color: #bae6fd;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ftp-alert-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ftp-alert-message {
+  color: #86efac;
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
+.ftp-alert-message.is-error {
+  color: #fca5a5;
+}
+
+/* Book CTA */
+.ftp-book-cta {
+  display: block;
+  margin: 14px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(34, 197, 94, 0.15));
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  color: #7dd3fc;
+  text-decoration: none;
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-align: center;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.ftp-book-cta:hover {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.24), rgba(34, 197, 94, 0.24));
+  border-color: rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+}
+
+/* Detail loading note */
+.ftp-detail-loading {
+  padding: 8px 14px;
+  color: #475569;
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ftp-detail-loading::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(56, 189, 248, 0.2);
+  border-top-color: #38bdf8;
+  animation: ftp-spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+/* Empty state */
+.ftp-detail-empty {
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  padding: 48px 20px;
+  text-align: center;
+  color: #475569;
+}
+
+.ftp-detail-empty-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.12);
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+}
+
+.ftp-detail-empty-icon svg {
+  width: 28px;
+  height: 28px;
+  stroke: #475569;
+  fill: none;
+}
+
+.ftp-detail-empty-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.ftp-detail-empty-hint {
+  font-size: 0.78rem;
+  color: #374151;
+  max-width: 24ch;
+  line-height: 1.5;
+}
+
+/* Not found state */
+.ftp-not-found {
+  padding: 24px 16px;
+  text-align: center;
+  color: #64748b;
+  display: grid;
+  gap: 6px;
+}
+
+.ftp-not-found strong {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.ftp-not-found p {
+  font-size: 0.78rem;
+  margin: 0;
+  color: #475569;
+}
+
+/* ============================================================
+   FLOATING ALERTS (error / warning)
+   ============================================================ */
+.ftp-alert {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 68px;
+  width: min(640px, calc(100% - 24px));
+  z-index: 11;
+  padding: 10px 14px;
+  border-radius: 14px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.82rem;
+  animation: ftp-slide-up 0.22s ease;
+}
+
+.ftp-alert--error {
+  background: rgba(127, 29, 29, 0.7);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: #fca5a5;
+}
+
+.ftp-alert--warning {
+  background: rgba(120, 53, 15, 0.7);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  color: #fcd34d;
+}
+
+.ftp-alert-icon {
+  flex-shrink: 0;
+  font-size: 15px;
+  margin-top: 1px;
+}
+
+.ftp-alert-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ftp-alert-body strong {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+/* ============================================================
+   STATUS BAR (bottom floating)
+   ============================================================ */
+.ftp-status-bar {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  height: 40px;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(56, 189, 248, 0.12);
+  background: rgba(7, 12, 22, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  overflow: hidden;
+}
+
+.ftp-bottom-dock {
+  position: absolute;
+  left: 50%;
+  bottom: 58px;
+  transform: translateX(-50%);
+  z-index: 9;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px;
+  border-radius: 16px;
+  border: 1px solid rgba(56, 189, 248, 0.14);
+  background: rgba(7, 12, 22, 0.78);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.34);
+}
+
+.ftp-bottom-dock button {
+  min-height: 30px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #94a3b8;
+  padding: 0 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ftp-bottom-dock button:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.1);
+  color: #bae6fd;
+}
+
+.ftp-utility-panel {
+  position: absolute;
+  left: 50%;
+  bottom: 106px;
+  z-index: 10;
+  width: min(360px, calc(100% - 28px));
+  transform: translateX(-50%);
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(56, 189, 248, 0.16);
+  background: rgba(7, 12, 22, 0.9);
+  box-shadow: 0 20px 54px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  color: #dbeafe;
+}
+
+.ftp-utility-panel h3 {
+  margin: 5px 28px 12px 0;
+  color: #f8fafc;
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.ftp-utility-panel p {
+  margin: 0 0 12px;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.ftp-utility-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 9px;
+  background: rgba(15, 23, 42, 0.75);
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.ftp-utility-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  color: #cbd5e1;
+  font-size: 0.82rem;
+}
+
+.ftp-utility-toggle input {
+  accent-color: #22c55e;
+}
+
+.ftp-utility-action {
+  min-height: 36px;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #22c55e, #0ea5e9);
+  color: #04111e;
+  padding: 0 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ftp-page.is-compact-panels .ftp-filter-panel-inner,
+.ftp-page.is-compact-panels .ftp-detail-inner {
+  padding: 12px;
+}
+
+.ftp-page.is-compact-panels .ftp-detail-section,
+.ftp-page.is-compact-panels .ftp-filter-group {
+  margin-bottom: 10px;
+}
+
+.ftp-widget-stack {
+  position: absolute;
+  left: 306px;
+  top: 86px;
+  z-index: 7;
+  width: 188px;
+  display: grid;
+  gap: 8px;
+}
+
+.ftp-widget-toggle,
+.ftp-mini-widget {
+  border: 1px solid rgba(56, 189, 248, 0.12);
+  background: rgba(7, 12, 22, 0.76);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.26);
+}
+
+.ftp-widget-toggle {
+  min-height: 30px;
+  color: #7dd3fc;
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ftp-widget-list {
+  display: grid;
+  gap: 8px;
+}
+
+.ftp-mini-widget {
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+}
+
+.ftp-mini-widget span {
+  color: #64748b;
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+}
+
+.ftp-mini-widget strong {
+  color: #dbeafe;
+  font-size: 0.82rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ftp-status-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.74rem;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.ftp-status-item strong {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.ftp-status-sep {
+  width: 1px;
+  height: 14px;
+  background: rgba(56, 189, 248, 0.1);
+  flex-shrink: 0;
+}
+
+.ftp-status-spacer {
+  flex: 1;
+}
+
+/* ============================================================
+   LOADING OVERLAY
+   ============================================================ */
+.ftp-loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.ftp-shimmer-stack {
+  display: grid;
+  gap: 8px;
+  width: min(400px, 80%);
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(7, 12, 22, 0.5);
+  backdrop-filter: blur(12px);
+}
+
+.ftp-shimmer {
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(56, 189, 248, 0.18),
+    rgba(255, 255, 255, 0.04)
+  );
+  background-size: 300% 100%;
+  animation: ftp-shimmer 1.4s linear infinite;
+}
+
+/* ============================================================
+   MOBILE BOTTOM DRAWER TOGGLE
+   ============================================================ */
+.ftp-mobile-fab {
+  display: none;
+  position: absolute;
+  bottom: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  background: rgba(7, 12, 22, 0.92);
+  backdrop-filter: blur(16px);
+  color: #7dd3fc;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes ftp-dot-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+@keyframes ftp-slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ftp-slide-up {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes ftp-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@keyframes ftp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   RTL SUPPORT
+   ============================================================ */
+[dir="rtl"] .ftp-filter-panel {
+  left: auto;
+  right: 12px;
+  transform: translateX(calc(280px + 20px));
+}
+
+[dir="rtl"] .ftp-filter-panel.is-open {
+  transform: translateX(0);
+}
+
+[dir="rtl"] .ftp-detail-panel {
+  right: auto;
+  left: 12px;
+  transform: translateX(calc(-360px - 20px));
+}
+
+[dir="rtl"] .ftp-detail-panel.is-active {
+  transform: translateX(0);
+}
+
+[dir="rtl"] .ftp-airport--right {
+  text-align: left;
+}
+
+[dir="rtl"] .ftp-info-value {
+  text-align: left;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+/* Compact topbar at smaller screens */
+@media (max-width: 1100px) {
+  .ftp-stat-pill {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .ftp-topbar-title {
+    display: none;
+  }
+
+  .ftp-topbar-sep {
+    display: none;
+  }
+
+  .ftp-detail-panel {
+    width: 320px;
+  }
+
+  .ftp-filter-panel {
+    width: 260px;
+  }
+
+  [dir="rtl"] .ftp-filter-panel {
+    transform: translateX(calc(260px + 20px));
+  }
+}
+
+/* Mobile: bottom sheets */
+@media (max-width: 768px) {
+  .ftp-page {
+    --ftp-topbar-height: 48px;
+  }
+
+  .ftp-topbar {
+    height: 48px;
+    padding: 0 12px;
+  }
+
+  .ftp-search-float {
+    width: calc(100% - 24px);
+    top: 10px;
+  }
+
+  .ftp-search-form {
+    padding: 6px;
+    border-radius: 16px;
+  }
+
+  .ftp-filter-panel,
+  [dir="rtl"] .ftp-filter-panel {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    max-height: 72vh;
+    border-radius: 20px 20px 0 0;
+    transform: translateY(100%);
+  }
+
+  .ftp-filter-panel.is-open,
+  [dir="rtl"] .ftp-filter-panel.is-open {
+    transform: translateY(0);
+  }
+
+  .ftp-detail-panel,
+  [dir="rtl"] .ftp-detail-panel {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    max-height: 72vh;
+    border-radius: 20px 20px 0 0;
+    transform: translateY(100%);
+  }
+
+  .ftp-detail-panel.is-active,
+  [dir="rtl"] .ftp-detail-panel.is-active {
+    transform: translateY(0);
+  }
+
+  .ftp-status-bar {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    height: 36px;
+    gap: 6px;
+    padding: 0 10px;
+    border-radius: 12px;
+  }
+
+  .ftp-status-item {
+    font-size: 0.68rem;
+  }
+
+  .ftp-mobile-fab {
+    display: flex;
+    bottom: 56px;
+  }
+
+  .ftp-airport-code {
+    font-size: 1.15rem;
+  }
+
+  .ftp-bottom-dock {
+    left: 8px;
+    right: 8px;
+    bottom: 50px;
+    transform: none;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .ftp-bottom-dock button {
+    flex: 0 0 auto;
+  }
+
+  .ftp-utility-panel {
+    left: 8px;
+    right: 8px;
+    bottom: 96px;
+    width: auto;
+    transform: none;
+  }
+
+  .ftp-widget-stack {
+    display: none;
+  }
+
+  .ftp-detail-panel {
+    bottom: 0;
+  }
+
+  .ftp-seo-faq-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .ftp-search-submit {
+    padding: 0 12px;
+    font-size: 0.78rem;
+  }
+
+  .ftp-brand-name {
+    display: none;
+  }
+
+  .ftp-brand-sub {
+    display: none;
+  }
+
+  .ftp-telem-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── Provider health pills in status bar ── */
+.ftp-provider-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  color: #64748b;
+}
+
+.ftp-provider-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #374151;
+  flex-shrink: 0;
+}
+
+.ftp-provider-dot.is-ok {
+  background: #4ade80;
+  box-shadow: 0 0 4px rgba(74, 222, 128, 0.5);
+}
+
+.ftp-seo-faq {
+  position: relative;
+  z-index: 0;
+  scroll-margin-top: calc(var(--ftp-topbar-height) + 28px);
+  background:
+    linear-gradient(180deg, rgba(8, 13, 20, 0) 0, #050914 42px),
+    #050914;
+  border-top: 1px solid rgba(56, 189, 248, 0.14);
+  padding: 78px 18px 56px;
+}
+
+.ftp-seo-faq::before {
+  content: '';
+  position: absolute;
+  top: 34px;
+  left: max(18px, calc((100% - 1080px) / 2));
+  right: max(18px, calc((100% - 1080px) / 2));
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.28), transparent);
+}
+
+.ftp-seo-faq-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.ftp-seo-faq h2 {
+  margin: 0 0 14px;
+  color: #e2e8f0;
+  font-size: 1.25rem;
+  letter-spacing: 0;
+}
+
+.ftp-seo-faq-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ftp-seo-faq-item {
+  border: 1px solid rgba(56, 189, 248, 0.1);
+  background: rgba(255, 255, 255, 0.035);
+  border-radius: 8px;
+  padding: 13px;
+}
+
+.ftp-seo-faq-item h3 {
+  margin: 0 0 7px;
+  color: #f8fafc;
+  font-size: 0.9rem;
+}
+
+.ftp-seo-faq-item p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .ftp-seo-faq {
+    padding: 64px 14px 44px;
+  }
+
+  .ftp-seo-faq-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── FR24 section provider tag ── */
+.ftp-provider-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  color: #7dd3fc;
+  letter-spacing: 0.06em;
+  vertical-align: middle;
+}
+
+/* ── FR24 data unavailable notice ── */
+.ftp-fr24-unavailable {
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: rgba(148, 163, 184, 0.07);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  color: #64748b;
+  font-size: 0.78rem;
+}
+
+/* ── Track unavailable notice ── */
+.ftp-track-notice {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(148, 163, 184, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  color: #475569;
+  font-size: 0.75rem;
+  font-style: italic;
+}

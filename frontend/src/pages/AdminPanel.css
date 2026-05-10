@@ -266,6 +266,121 @@
   margin-top: 4px;
 }
 
+.admin-analytics-grid {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.admin-analytics-panel {
+  min-width: 0;
+  padding: 20px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #f8fbff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+}
+
+.admin-analytics-panel--wide {
+  grid-column: 1 / -1;
+}
+
+.admin-analytics-panel h3 {
+  margin: 0 0 14px;
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.admin-bar-chart--time {
+  display: flex;
+  align-items: end;
+  gap: 6px;
+  height: 180px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.admin-time-bar {
+  flex: 1;
+  min-width: 4px;
+  height: 100%;
+  display: flex;
+  align-items: end;
+}
+
+.admin-time-bar span {
+  width: 100%;
+  min-height: 8px;
+  border-radius: 8px 8px 2px 2px;
+  background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+}
+
+.admin-rank-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-rank-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.admin-rank-row div,
+.admin-rank-row em {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-rank-row strong {
+  display: block;
+  color: #0f172a;
+  font-size: 0.92rem;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-rank-row span {
+  display: block;
+  color: #64748b;
+  font-size: 0.78rem;
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-rank-row em {
+  color: #1d4ed8;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.admin-rank-row i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: #3b82f6;
+}
+
+.admin-empty-chart {
+  color: #64748b;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
 /* Legacy note */
 .admin-legacy-note {
   padding: 18px;
@@ -285,6 +400,10 @@
 
   .admin-quick-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-analytics-grid {
+    grid-template-columns: 1fr;
   }
 }
 

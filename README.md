@@ -1,6 +1,7 @@
 # Skybridge Flights
 
 Skybridge Flights is a full-stack travel platform with public flight search, booking-related pages, admin tools, authentication, reviews, support workflows, and an AI-powered multilingual blog automation system.
+It also includes a Skybridge Flight Tracker with a multi-provider architecture: Flightradar24 as the premium live-data source, OpenSky Network as the always-available fallback, and Aviationstack / FlightAware for commercial schedule enrichment.
 
 ## Project Structure
 
@@ -16,6 +17,7 @@ The Skybridge AI Blog Auto Publisher supports:
 - multilingual blog posts in English, Arabic, and German
 - public blog listing and article detail pages
 - programmatic SEO landing pages
+- public live flight tracker and airport intelligence pages
 - AI article generation with SEO, FAQ, CTA, image metadata, and internal links
 - trend research and topic scoring
 - queue-based generation with retries and daily/monthly budget limits
@@ -53,6 +55,74 @@ Important backend variables include:
 - `CLOUDINARY_CLOUD_NAME`
 - `CLOUDINARY_API_KEY`
 - `CLOUDINARY_API_SECRET`
+- `OPENSKY_CLIENT_ID`
+- `OPENSKY_CLIENT_SECRET`
+- `AVIATIONSTACK_API_KEY`
+- `FLIGHTAWARE_API_KEY`
+- `FLIGHT_TRACKER_COMMERCIAL_PROVIDER`
+- `FLIGHT_TRACKER_ENABLED`
+- `FLIGHT_TRACKER_CACHE_MS`
+- `FLIGHT_TRACKER_MAX_AIRCRAFT`
+- `FLIGHT_TRACKER_RATE_LIMIT_PER_MINUTE`
+- `FLIGHT_TRACKER_DEFAULT_REGION`
+- `FLIGHT_TRACKER_ENABLED_REGIONS`
+- `FLIGHT_TRACKER_SHOW_CTA`
+- `FLIGHTRADAR24_API_KEY`
+- `FLIGHT_TRACKER_PRIMARY_PROVIDER`
+- `FR24_LIVE_CACHE_MS`
+- `FR24_DETAILS_CACHE_MS`
+- `FR24_TRACKS_CACHE_MS`
+- `FR24_RATE_LIMIT_PER_MINUTE`
+
+## Flight Tracker Provider Setup
+
+### Flightradar24 (premium live data)
+
+Obtain an API key from [fr24api.flightradar24.com](https://fr24api.flightradar24.com) and set:
+
+```
+FLIGHTRADAR24_API_KEY=your_key_here
+FLIGHT_TRACKER_PRIMARY_PROVIDER=auto
+```
+
+`auto` (the default) uses FR24 when a key is present and falls back to OpenSky automatically. Set to `fr24` to force FR24, or `opensky` to always use OpenSky.
+
+**Explorer plan limits** — the service enforces a conservative 8 req/min ceiling by default. Do not poll more aggressively without upgrading your plan. The UI's refresh intervals are already calibrated to stay within this budget.
+
+New endpoints available with FR24:
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/flight-tracker/flights/:flightId` | Full flight details (registration, schedule, status) |
+| `GET /api/flight-tracker/track/:flightId` | Historical track points for map route replay |
+| `GET /api/flight-tracker/providers/health` | Live status of all providers (FR24, OpenSky, commercial) |
+
+All existing endpoints (`/live`, `/search`, `/airport/:code`, `/aircraft/:icao24`, `/health`) continue to work regardless of which provider is active.
+
+### OpenSky Network (free fallback)
+
+OpenSky requires no key for anonymous access. For higher rate limits add credentials:
+
+```
+OPENSKY_CLIENT_ID=your_client_id
+OPENSKY_CLIENT_SECRET=your_client_secret
+```
+
+### Commercial enrichment (schedule, ETA, delay)
+
+Set one of:
+
+```
+FLIGHT_TRACKER_COMMERCIAL_PROVIDER=aviationstack
+AVIATIONSTACK_API_KEY=your_key
+
+# or
+
+FLIGHT_TRACKER_COMMERCIAL_PROVIDER=flightaware
+FLIGHTAWARE_API_KEY=your_key
+```
+
+Leave `FLIGHT_TRACKER_COMMERCIAL_PROVIDER` unset (or `none`) to disable commercial enrichment — the tracker still works with live position data only.
 
 All placeholders are intentionally empty in `.env.example`.
 
@@ -93,6 +163,7 @@ Tests:
 
 ```bash
 node Backend/tests/blogPhase6Smoke.js
+node Backend/tests/flightTrackerSmoke.js
 
 cd frontend
 CI=true npm test -- --watchAll=false

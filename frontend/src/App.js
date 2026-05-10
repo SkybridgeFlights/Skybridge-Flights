@@ -4,11 +4,13 @@ import {
   Routes,
   Route,
   Navigate,
+  Link,
   useLocation,
 } from 'react-router-dom';
 import './App.css';
 import CookieBanner from './components/CookieBanner';
-import { initAnalytics } from './utils/analytics';
+import AdSlot from './components/monetization/AdSlot';
+import { initAnalytics, trackPageView } from './utils/analytics';
 
 import HomePage from './pages/HomePage';
 import FlightsPage from './pages/FlightsPage.js';
@@ -16,6 +18,8 @@ import BookingsPage from './pages/BookingsPage';
 import BlogPage from './pages/BlogPage';
 import BlogPostPage from './pages/BlogPostPage';
 import SeoLandingPage from './pages/SeoLandingPage';
+import LiveFlightTrackerPage from './pages/LiveFlightTrackerPage';
+import AirportIntelligencePage from './pages/AirportIntelligencePage';
 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -50,6 +54,11 @@ import FabHub from './components/FAB/FabHub';
 
 import SupportChatModal from './components/support/SupportChatModal';
 import SupportInboxPage from './admin/SupportInboxPage';
+
+function LiveTrackerRedirect() {
+  const location = useLocation();
+  return <Navigate to={`/flight-tracker${location.search || ''}`} replace />;
+}
 
 function StaffRoute({ children }) {
   try {
@@ -89,6 +98,11 @@ function AppShell() {
     initAnalytics();
   }, []);
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => trackPageView(location), 250);
+    return () => window.clearTimeout(timer);
+  }, [location]);
+
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   useEffect(() => {
@@ -126,7 +140,10 @@ function AppShell() {
 
   const isAppSearchPage = location.pathname === '/app-search';
   const isForgotPasswordAppPage = location.pathname === '/forgot-password-app';
-  const hideSiteChrome = isAppSearchPage || isForgotPasswordAppPage;
+  const isFlightTrackerPage =
+    location.pathname === '/flight-tracker' ||
+    location.pathname.startsWith('/live-flights/');
+  const hideSiteChrome = isAppSearchPage || isForgotPasswordAppPage || isFlightTrackerPage;
 
   const hideFabRoutes = [
     '/',
@@ -160,6 +177,9 @@ function AppShell() {
             <div className="brand-block">
               <h1 className="company-title">Skybridge Flights</h1>
             </div>
+            <div className="topbar-actions">
+              <Link to={`/flight-tracker${location.search || ''}`} className="topbar-tracker-link">Flight Tracker</Link>
+            </div>
           </header>
         </>
       )}
@@ -168,6 +188,10 @@ function AppShell() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/flights" element={<FlightsPage />} />
+          <Route path="/live-tracker" element={<LiveTrackerRedirect />} />
+          <Route path="/flight-tracker" element={<LiveFlightTrackerPage />} />
+          <Route path="/live-flights/:flightNumber" element={<LiveFlightTrackerPage />} />
+          <Route path="/airports/:airportCode" element={<AirportIntelligencePage />} />
           <Route path="/flights/:slug" element={<SeoLandingPage />} />
           <Route path="/travel-guides/:slug" element={<SeoLandingPage />} />
           <Route path="/seo/:slug" element={<SeoLandingPage />} />
@@ -267,6 +291,7 @@ function AppShell() {
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         </Routes>
       </main>
+      {!hideSiteChrome && <AdSlot placement="footer_banner" metadata={{ path: location.pathname }} />}
 
       {!hideSiteChrome && !hideFab && <FabHub />}
       {!hideSiteChrome && (

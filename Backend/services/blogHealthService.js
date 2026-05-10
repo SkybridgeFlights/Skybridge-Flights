@@ -5,6 +5,7 @@ const BlogSettings = require('../models/BlogSettings');
 const { getUsageSummary } = require('./blogUsageService');
 const { getSitemapQa } = require('./blogSitemapQaService');
 const { getSearchConsoleSummary } = require('./searchConsoleService');
+const { getHealth: getFlightTrackerHealth } = require('./flightTrackerService');
 
 async function getBlogHealth() {
   const [settings, queue, lastAi, lastPublish, publishedPosts, draftPosts, seoPages, usage, sitemap, searchConsole] =
@@ -20,6 +21,15 @@ async function getBlogHealth() {
       getSitemapQa(),
       getSearchConsoleSummary(),
     ]);
+  const flightTracker = await getFlightTrackerHealth().catch((error) => ({
+    enabled: false,
+    provider: 'opensky',
+    authMode: 'anonymous',
+    cacheAgeMs: null,
+    lastSuccessfulFetchAt: null,
+    lastError: error.message,
+    aircraftCount: 0,
+  }));
 
   return {
     scheduler: {
@@ -36,6 +46,15 @@ async function getBlogHealth() {
     lastAiGeneration: lastAi,
     lastSuccessfulPublish: lastPublish,
     searchConsole,
+    flightTracker: {
+      enabled: !!flightTracker.enabled,
+      provider: flightTracker.provider || 'opensky',
+      authMode: flightTracker.authMode || 'anonymous',
+      cacheAgeMs: flightTracker.cacheAgeMs ?? null,
+      lastSuccessfulFetchAt: flightTracker.lastSuccessfulFetchAt || null,
+      lastError: flightTracker.lastError || null,
+      aircraftCount: flightTracker.aircraftCount || 0,
+    },
     cloudinary: {
       configured: !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET),
     },

@@ -20,6 +20,7 @@ const { createAsset, listAssets } = require('../services/blogAssetService');
 const { getSeoQaReport } = require('../services/blogSeoQaService');
 const { getBrokenLinkReport, runBrokenLinkCheck } = require('../services/blogBrokenLinkService');
 const { getSitemapQa } = require('../services/blogSitemapQaService');
+const { getAirportCodes } = require('../services/flightTrackerData');
 const { createNotification } = require('../services/blogNotificationService');
 const { blogLog } = require('../services/blogLoggerService');
 const { withSchedulerLock } = require('../services/blogSchedulerLockService');
@@ -535,6 +536,14 @@ exports.updateSettings = async (req, res) => {
       'imageProvider',
       'fallbackFeaturedImage',
       'contentRefreshAfterDays',
+      'flightTrackerEnabled',
+      'flightTrackerCacheDurationMs',
+      'flightTrackerMaxAircraftReturned',
+      'flightTrackerDefaultRegion',
+      'flightTrackerEnabledRegions',
+      'flightTrackerShowCta',
+      'flightTrackerPollingIntervalMs',
+      'flightTrackerCommercialProvider',
       'scheduledQaEnabled',
       'qaScheduleTime',
       'qaFrequency',
@@ -1191,15 +1200,24 @@ exports.getSitemap = async (_req, res) => {
       BlogPost.find({ status: 'published' }).select('slug language updatedAt publishedAt canonicalUrl translationGroup'),
       BlogSeoLandingPage.find({ status: 'published' }).select('path updatedAt'),
     ]);
-    const staticUrls = ['/', '/flights', '/blog', '/about', '/contact'];
+    const staticUrls = ['/', '/flights', '/flight-tracker', '/blog', '/about', '/contact'];
+    const airportUrls = getAirportCodes().map((code) => `/airports/${code}`);
+    const liveFlightUrls = String(process.env.FLIGHT_TRACKER_SITEMAP_FLIGHTS || 'TK1722,EK46,ME216')
+      .split(',')
+      .map((item) => item.trim().toUpperCase())
+      .filter((item) => /^[A-Z0-9]{3,8}$/.test(item))
+      .slice(0, 12)
+      .map((flightNumber) => `/live-flights/${flightNumber}`);
     const urls = staticUrls
+      .concat(airportUrls)
+      .concat(liveFlightUrls)
       .map(
         (path) => `
-  <url>
-    <loc>${SITE_URL}${path}</loc>
-    <changefreq>${path === '/blog' ? 'daily' : 'weekly'}</changefreq>
-    <priority>${path === '/' ? '1.0' : '0.8'}</priority>
-  </url>`
+    <url>
+      <loc>${SITE_URL}${path}</loc>
+      <changefreq>${path === '/blog' || path === '/flight-tracker' || path.startsWith('/live-flights/') ? 'daily' : 'weekly'}</changefreq>
+      <priority>${path === '/' ? '1.0' : path.startsWith('/live-flights/') ? '0.74' : path.startsWith('/airports/') ? '0.72' : '0.8'}</priority>
+    </url>`
       )
       .join('');
 
@@ -1242,6 +1260,9 @@ exports.getRobots = (_req, res) => {
   res.type('text/plain');
   res.send(`User-agent: *
 Allow: /
+Allow: /flight-tracker
+Allow: /airports/
+Allow: /live-flights/
 Sitemap: ${SITE_URL}/sitemap.xml
 `);
 };

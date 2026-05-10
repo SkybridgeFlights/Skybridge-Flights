@@ -42,6 +42,27 @@
     0 -1px 0 rgba(0, 0, 0, 0.12) inset;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.topbar-tracker-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
 /* ── Menu button ── */
 .menu-btn {
   display: inline-flex;
@@ -124,6 +145,16 @@
     padding: 8px 12px;
     font-size: 13px;
     border-radius: 10px;
+  }
+
+  .topbar-actions {
+    margin-left: 0;
+  }
+
+  .topbar-tracker-link {
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 12px;
   }
 
   .sidebar {

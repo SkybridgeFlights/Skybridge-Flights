@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { Link, useSearchParams } from 'react-router-dom';
 import { API_BASE_URL } from '../apiConfig';
+import { withTrackerLanguage } from '../utils/trackerLanguage';
 import './BlogPage.css';
 
 const languages = [
@@ -74,6 +75,10 @@ function BlogPage() {
       <div className="blog-page-header">
         <h1>Skybridge Travel Blog</h1>
         <p>Practical travel guides for flights, airports, baggage, hotels, car rental, visas, and destination planning.</p>
+        <div className="blog-tracker-links">
+          <Link to={withTrackerLanguage('/flight-tracker', language)}>Open Flight Tracker</Link>
+          <Link to={withTrackerLanguage('/airports/BER', language)}>Berlin Airport Intelligence</Link>
+        </div>
 
         <div className="blog-language-switch" aria-label="Blog language">
           {languages.map((item) => (

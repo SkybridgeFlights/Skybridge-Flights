@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { API_BASE_URL } from '../apiConfig';
+import AdSlot from '../components/monetization/AdSlot';
+import { withTrackerLanguage } from '../utils/trackerLanguage';
 import './BlogPostPage.css';
 
 function articlePath(item) {
@@ -204,6 +206,7 @@ function BlogPostPage() {
           {post.excerpt ? <p className="blog-post-excerpt">{post.excerpt}</p> : null}
 
           <div className="blog-post-content">{renderMarkdown(post.content)}</div>
+          <AdSlot placement="blog_inline" metadata={{ slug: post.slug, category: post.category || '' }} />
 
           {Array.isArray(post.faq) && post.faq.length > 0 ? (
             <section className="blog-post-faq">
@@ -247,6 +250,17 @@ function BlogPostPage() {
             <strong>Editorial policy</strong>
             <p>{post.editorialPolicy || 'Skybridge Flights publishes evergreen travel planning content with review and SEO quality checks.'}</p>
             <p>{post.travelDisclaimer}</p>
+          </div>
+
+          <div className="blog-post-tracker">
+            <div>
+              <strong>Live flight tracker</strong>
+              <p>Check live aircraft and airport guidance while planning the rest of your trip.</p>
+            </div>
+            <div className="blog-post-tracker-links">
+              <Link to={withTrackerLanguage('/flight-tracker', language)}>Open Flight Tracker</Link>
+              <Link to={withTrackerLanguage('/airports/BER', language)}>Berlin Airport Intelligence</Link>
+            </div>
           </div>
         </article>
 

@@ -147,6 +147,14 @@ function ManageBlogPage() {
     minimumQualityScore: 70,
     maxInternalLinksPerArticle: 5,
     autoPublishMode: 'draft-only',
+    flightTrackerEnabled: true,
+    flightTrackerCacheDurationMs: 60000,
+    flightTrackerMaxAircraftReturned: 75,
+    flightTrackerDefaultRegion: 'global',
+    flightTrackerEnabledRegions: ['global', 'germany', 'europe', 'turkey', 'middle-east'],
+    flightTrackerShowCta: true,
+    flightTrackerPollingIntervalMs: 60000,
+    flightTrackerCommercialProvider: 'none',
   }), []);
 
   const fetchAll = async () => {
@@ -453,16 +461,21 @@ function ManageBlogPage() {
             <h3>Blog System Health</h3>
             {isAdmin ? <button type="button" className="secondary-btn small" onClick={runProductionTests}>Run Production Tests</button> : null}
           </div>
-          <div className="blog-metric-grid">
-            <div><span>Scheduler</span><strong>{health?.scheduler?.scheduledQaEnabled ? 'QA On' : 'QA Off'}</strong></div>
-            <div><span>Queue failed</span><strong>{health?.queue?.failed || 0}</strong></div>
-            <div><span>Published</span><strong>{health?.totals?.publishedPosts || 0}</strong></div>
-            <div><span>Drafts</span><strong>{health?.totals?.draftPosts || 0}</strong></div>
-            <div><span>SEO pages</span><strong>{health?.totals?.seoLandingPages || 0}</strong></div>
-            <div><span>Monthly AI</span><strong>${Number(health?.totals?.monthlyAiCost || 0).toFixed(2)}</strong></div>
-            <div><span>Search Console</span><strong>{health?.searchConsole?.configured ? 'Ready' : 'Off'}</strong></div>
-            <div><span>Cloudinary</span><strong>{health?.cloudinary?.configured ? 'Ready' : 'Off'}</strong></div>
-          </div>
+            <div className="blog-metric-grid">
+              <div><span>Scheduler</span><strong>{health?.scheduler?.scheduledQaEnabled ? 'QA On' : 'QA Off'}</strong></div>
+              <div><span>Queue failed</span><strong>{health?.queue?.failed || 0}</strong></div>
+              <div><span>Published</span><strong>{health?.totals?.publishedPosts || 0}</strong></div>
+              <div><span>Drafts</span><strong>{health?.totals?.draftPosts || 0}</strong></div>
+              <div><span>SEO pages</span><strong>{health?.totals?.seoLandingPages || 0}</strong></div>
+              <div><span>Monthly AI</span><strong>${Number(health?.totals?.monthlyAiCost || 0).toFixed(2)}</strong></div>
+              <div><span>Search Console</span><strong>{health?.searchConsole?.configured ? 'Ready' : 'Off'}</strong></div>
+              <div><span>Cloudinary</span><strong>{health?.cloudinary?.configured ? 'Ready' : 'Off'}</strong></div>
+              <div><span>Tracker</span><strong>{health?.flightTracker?.enabled ? 'On' : 'Off'}</strong></div>
+              <div><span>Tracker auth</span><strong>{health?.flightTracker?.authMode || 'anonymous'}</strong></div>
+              <div><span>Tracker cache</span><strong>{health?.flightTracker?.cacheAgeMs != null ? `${Math.round(health.flightTracker.cacheAgeMs / 1000)}s` : 'N/A'}</strong></div>
+              <div><span>Tracker fetch</span><strong>{health?.flightTracker?.lastSuccessfulFetchAt ? new Date(health.flightTracker.lastSuccessfulFetchAt).toLocaleString() : 'N/A'}</strong></div>
+              <div><span>Tracker error</span><strong>{health?.flightTracker?.lastError ? 'Issue' : 'OK'}</strong></div>
+            </div>
           {testResults ? (
             <div className="mini-table">
               {testResults.tests?.map((test) => (
@@ -580,6 +593,14 @@ function ManageBlogPage() {
               <label><span>Auto-apply CTR SEO</span><input type="checkbox" checked={!!settings.autoApplyCtrOptimizations} onChange={(e) => setSettings({ ...settings, autoApplyCtrOptimizations: e.target.checked })} /></label>
               <label><span>Image provider</span><input value={settings.imageProvider || ''} onChange={(e) => setSettings({ ...settings, imageProvider: e.target.value })} /></label>
               <label><span>Refresh after days</span><input type="number" value={settings.contentRefreshAfterDays || 180} onChange={(e) => setSettings({ ...settings, contentRefreshAfterDays: Number(e.target.value) })} /></label>
+              <label><span>Live tracker enabled</span><input type="checkbox" checked={settings.flightTrackerEnabled !== false} onChange={(e) => setSettings({ ...settings, flightTrackerEnabled: e.target.checked })} /></label>
+              <label><span>Tracker cache ms</span><input type="number" value={settings.flightTrackerCacheDurationMs || 60000} onChange={(e) => setSettings({ ...settings, flightTrackerCacheDurationMs: Number(e.target.value) })} /></label>
+              <label><span>Max aircraft</span><input type="number" value={settings.flightTrackerMaxAircraftReturned || 75} onChange={(e) => setSettings({ ...settings, flightTrackerMaxAircraftReturned: Number(e.target.value) })} /></label>
+              <label><span>Default region</span><select value={settings.flightTrackerDefaultRegion || 'global'} onChange={(e) => setSettings({ ...settings, flightTrackerDefaultRegion: e.target.value })}><option value="global">Worldwide</option><option value="germany">Germany</option><option value="europe">Europe</option><option value="turkey">Turkey</option><option value="middle-east">Middle East</option></select></label>
+              <label><span>Enabled regions</span><input value={(settings.flightTrackerEnabledRegions || []).join(', ')} onChange={(e) => setSettings({ ...settings, flightTrackerEnabledRegions: e.target.value.split(',').map((x) => x.trim()).filter(Boolean) })} /></label>
+              <label><span>Commercial provider</span><select value={settings.flightTrackerCommercialProvider || 'none'} onChange={(e) => setSettings({ ...settings, flightTrackerCommercialProvider: e.target.value })}><option value="none">None</option><option value="aviationstack">Aviationstack</option><option value="flightaware">FlightAware</option></select></label>
+              <label><span>Show CTA</span><input type="checkbox" checked={settings.flightTrackerShowCta !== false} onChange={(e) => setSettings({ ...settings, flightTrackerShowCta: e.target.checked })} /></label>
+              <label><span>Polling interval ms</span><input type="number" value={settings.flightTrackerPollingIntervalMs || 60000} onChange={(e) => setSettings({ ...settings, flightTrackerPollingIntervalMs: Number(e.target.value) })} /></label>
               <label><span>Scheduled QA</span><input type="checkbox" checked={!!settings.scheduledQaEnabled} onChange={(e) => setSettings({ ...settings, scheduledQaEnabled: e.target.checked })} /></label>
               <label><span>QA time</span><input value={settings.qaScheduleTime || '08:00'} onChange={(e) => setSettings({ ...settings, qaScheduleTime: e.target.value })} /></label>
               <label><span>QA frequency</span><select value={settings.qaFrequency || 'daily'} onChange={(e) => setSettings({ ...settings, qaFrequency: e.target.value })}><option value="daily">Daily</option><option value="weekly">Weekly</option></select></label>

@@ -12,6 +12,7 @@ const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 const { init: initIO } = require('./realtime/io');
 const { startBlogScheduler } = require('./services/blogScheduler');
 const { startBlogQueueWorker } = require('./services/blogQueueService');
+const { startFlightAlertWorker } = require('./services/flightAlertWorker');
 const { getSitemap, getRobots } = require('./controllers/blogController');
 
 const app = express();
@@ -69,13 +70,18 @@ app.get('/robots.txt', getRobots);
 
 /* Core routes */
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/flights', require('./routes/flightRoutes'));
+app.use('/api/flight-tracker', require('./routes/flightTrackerRoutes'));
+app.use('/api/flight-alerts', require('./routes/flightAlertRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/staff', require('./routes/staffRoutes'));
 app.use('/api/admin/users', require('./routes/userAdminRoutes'));
 app.use('/api/settings', require('./routes/SettingsRoutes'));
 app.use('/api/redirect', require('./routes/redirectRoutes'));
+app.use('/api/admin/flight-alerts', require('./routes/flightAlertAdminRoutes'));
+app.use('/api/admin/analytics', require('./routes/adminAnalyticsRoutes'));
 app.use('/api/blog', require('./routes/blogRoutes'));
 app.use('/api/admin', require('./routes/adminStatsRoutes'));
 app.use('/api/support', require('./routes/supportRoutes'));
@@ -98,6 +104,7 @@ mongoose
     console.log('MongoDB connected');
     startBlogScheduler();
     startBlogQueueWorker();
+    startFlightAlertWorker();
   })
   .catch((err) => {
     console.error('Mongo error:', err);

@@ -256,6 +256,8 @@ const HomePage = () => {
             <Link to="/privacy">Privacy Policy</Link>
             <Link to="/blog">Blog</Link>
             <Link to="/flights">Search Flights</Link>
+            <Link to="/flight-tracker">Flight Tracker</Link>
+            <Link to="/airports/BER">Airport Intelligence</Link>
           </nav>
           <p className="footer-disclosure">
             Skybridge Flights is an affiliate travel platform. Some links may earn us

@@ -37,6 +37,7 @@ const Icons = {
   ManageStaff: () => <SvgIcon><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></SvgIcon>,
   Support:     () => <SvgIcon><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></SvgIcon>,
   Profile:     () => <SvgIcon><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></SvgIcon>,
+  Tracker:     () => <SvgIcon><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3"/><path d="M22 12h-3"/><path d="M12 19v3"/><path d="M5 12H2"/></SvgIcon>,
   Logout:      () => <SvgIcon><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></SvgIcon>,
   Close:       () => <SvgIcon size={16}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></SvgIcon>,
   Plane:       () => <SvgIcon size={20}><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></SvgIcon>,
@@ -94,6 +95,14 @@ function Sidebar({ menuOpen, toggleMenu }) {
   };
 
   const navCls = ({ isActive }) => isActive ? 'nav-item active' : 'nav-item';
+  const trackerNavItem = (
+    <li>
+      <NavLink to="/flight-tracker" className={navCls} onClick={onNav}>
+        <Icons.Tracker />
+        <span>Flight Tracker</span>
+      </NavLink>
+    </li>
+  );
 
   const roleBadge = isAdmin
     ? { label: 'Admin', cls: 'role-admin' }
@@ -143,6 +152,7 @@ function Sidebar({ menuOpen, toggleMenu }) {
           <ul>
             <li><NavLink to="/" className={navCls} onClick={onNav} end><Icons.Home /><span>Home</span></NavLink></li>
             <li><NavLink to="/flights" className={navCls} onClick={onNav}><Icons.Flights /><span>Search Flights</span></NavLink></li>
+            {trackerNavItem}
             <li><NavLink to="/blog" className={navCls} onClick={onNav}><Icons.Blog /><span>Blog</span></NavLink></li>
             <li><NavLink to="/about" className={navCls} onClick={onNav}><Icons.About /><span>About Us</span></NavLink></li>
             <li><NavLink to="/contact" className={navCls} onClick={onNav}><Icons.Contact /><span>Contact Us</span></NavLink></li>
@@ -177,6 +187,7 @@ function Sidebar({ menuOpen, toggleMenu }) {
             {perms.viewStats       && <li><NavLink to="/admin" className={navCls} onClick={onNav} end><Icons.Dashboard /><span>Dashboard</span></NavLink></li>}
             {perms.manageProviders && <li><NavLink to="/admin/providers" className={navCls} onClick={onNav}><Icons.Providers /><span>Providers</span></NavLink></li>}
             {perms.viewUsers       && <li><NavLink to="/admin/users" className={navCls} onClick={onNav}><Icons.Users /><span>Users</span></NavLink></li>}
+            {trackerNavItem}
             {(perms.manageBlog || perms.publishBlog) && <li><NavLink to="/admin/blog" className={navCls} onClick={onNav}><Icons.ManageBlog /><span>Blog</span></NavLink></li>}
             {perms.manageReviews   && <li><NavLink to="/admin/reviews" className={navCls} onClick={onNav}><Icons.Reviews /><span>Reviews</span></NavLink></li>}
             {perms.manageSupport   && <li><NavLink to="/admin/support" className={navCls} onClick={onNav}><Icons.Support /><span>Support</span></NavLink></li>}
@@ -189,6 +200,7 @@ function Sidebar({ menuOpen, toggleMenu }) {
           <ul>
             <li><NavLink to="/" className={navCls} onClick={onNav} end><Icons.Home /><span>Home</span></NavLink></li>
             <li><NavLink to="/flights" className={navCls} onClick={onNav}><Icons.Flights /><span>Search Flights</span></NavLink></li>
+            {trackerNavItem}
             <li><NavLink to="/blog" className={navCls} onClick={onNav}><Icons.Blog /><span>Blog</span></NavLink></li>
             <li><NavLink to="/user-profile" className={navCls} onClick={onNav}><Icons.Profile /><span>My Profile</span></NavLink></li>
             <li><NavLink to="/about" className={navCls} onClick={onNav}><Icons.About /><span>About Us</span></NavLink></li>

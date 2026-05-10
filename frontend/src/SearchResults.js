@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import './SearchResults.css';
 import { API_BASE_URL } from './apiConfig';
+import { trackEvent } from './utils/analytics';
 
 function SearchResults() {
   const [searchMeta, setSearchMeta] = useState(null);
@@ -152,6 +153,14 @@ function SearchResults() {
           ? offer.deepLink
           : `${API_BASE_URL}/api/redirect/${offer.providerKey}?${params.toString()}`;
 
+      trackEvent('booking_search_click', {
+        metadata: {
+          provider: offer?.providerKey || offer?.provider || '',
+          from: flight?.from || searchMeta?.fromCode || '',
+          to: flight?.to || searchMeta?.toCode || '',
+          date: flight?.date || searchMeta?.date || '',
+        },
+      });
       window.open(url, '_blank', 'noopener,noreferrer');
     },
     [searchMeta]

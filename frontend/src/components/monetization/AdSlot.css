@@ -1,0 +1,56 @@
+.ad-slot {
+  border: 1px solid rgba(56, 189, 248, 0.12);
+  border-radius: 12px;
+  background: rgba(8, 15, 26, 0.74);
+  color: #dbeafe;
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.ad-slot__label {
+  color: #64748b;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ad-slot strong {
+  color: #f8fafc;
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+.ad-slot p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.ad-slot a {
+  justify-self: start;
+  color: #7dd3fc;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.ad-slot a:hover {
+  color: #38bdf8;
+}
+
+.ad-slot--footer_banner,
+.ad-slot--airport_page_inline,
+.ad-slot--blog_inline {
+  max-width: 1080px;
+  margin: 22px auto;
+  background: rgba(15, 23, 42, 0.82);
+}
+
+.ad-slot--tracker_sidebar_top,
+.ad-slot--tracker_sidebar_bottom,
+.ad-slot--tracker_details_inline {
+  margin: 14px 14px 0;
+}
